@@ -1,0 +1,27 @@
+<urlset
+    xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+    xmlns:xhtml="http://www.w3.org/1999/xhtml"
+    ><url>
+            <loc>https://www.benzimu.com/</loc><lastmod>2017-11-10T22:00:00&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://www.benzimu.com/categories/</loc><lastmod>2017-11-10T22:00:00&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://www.benzimu.com/posts/</loc><lastmod>2017-11-10T22:00:00&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://www.benzimu.com/tags/</loc><lastmod>2017-11-10T22:00:00&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://www.benzimu.com/tags/tornado/</loc><lastmod>2017-11-10T22:00:00&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://www.benzimu.com/tornado_multi_processes/</loc><lastmod>2017-11-10T22:00:00&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://www.benzimu.com/categories/tornado-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/</loc><lastmod>2017-11-10T22:00:00&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://www.benzimu.com/tornado_concurrent/</loc><lastmod>2017-11-10T10:00:00&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://www.benzimu.com/tornado_gen/</loc><lastmod>2017-11-10T09:00:00&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://www.benzimu.com/tornado_ioloop_periodiccallback/</loc><lastmod>2017-11-10T09:00:00&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://www.benzimu.com/tornado_iostream/</loc><lastmod>2017-11-06T10:00:00&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://www.benzimu.com/tornado_http1connection/</loc><lastmod>2017-11-06T09:00:00&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://www.benzimu.com/tornado_netutil/</loc><lastmod>2017-09-25T08:00:00&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://www.benzimu.com/tornado_httpserver/</loc><lastmod>2017-09-08T08:00:00&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://www.benzimu.com/tornado_platform_posix/</loc><lastmod>2017-09-01T08:00:00&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://www.benzimu.com/tornado_util_configurable/</loc><lastmod>2017-08-31T08:00:00&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://www.benzimu.com/tornado_ioloop/</loc><lastmod>2017-08-25T08:00:00&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://www.benzimu.com/io_multiplexing/</loc><lastmod>2017-08-24T10:00:00&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://www.benzimu.com/tags/reactor/</loc><lastmod>2017-08-24T10:00:00&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://www.benzimu.com/tags/socket/</loc><lastmod>2017-08-24T09:00:00&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://www.benzimu.com/socket_tcp/</loc><lastmod>2017-08-24T09:00:00&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://www.benzimu.com/tags/tcp/</loc><lastmod>2017-08-24T09:00:00&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://www.benzimu.com/readme/</loc><lastmod>2017-08-24T08:00:00&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url></urlset>

@@ -1,0 +1,110 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>BenZimu&#39;s Blog</title>
+        <link>https://www.benzimu.com/</link>
+        <description>凡事豫则立，不豫则废！-《礼记·中庸》</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>benzimuu@gmail.com (BenZimu)</managingEditor>
+            <webMaster>benzimuu@gmail.com (BenZimu)</webMaster><lastBuildDate>Fri, 10 Nov 2017 22:00:00 &#43;0800</lastBuildDate>
+            <atom:link href="https://www.benzimu.com/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+    <title>tornado 多进程实现解析</title>
+    <link>https://www.benzimu.com/tornado_multi_processes/</link>
+    <pubDate>Fri, 10 Nov 2017 22:00:00 &#43;0800</pubDate>
+    <author>BenZimu</author>
+    <guid>https://www.benzimu.com/tornado_multi_processes/</guid>
+    <description><![CDATA[<div class="featured-image">
+                <img src="/images/tornado_src_analysis/featured_multiple_processes.jpg" referrerpolicy="no-referrer">
+            </div>了解 tornado 多进程执行模式实现原理。]]></description>
+</item>
+<item>
+    <title>tornado concurrent 实现解析</title>
+    <link>https://www.benzimu.com/tornado_concurrent/</link>
+    <pubDate>Fri, 10 Nov 2017 10:00:00 &#43;0800</pubDate>
+    <author>BenZimu</author>
+    <guid>https://www.benzimu.com/tornado_concurrent/</guid>
+    <description><![CDATA[<div class="featured-image">
+                <img src="/images/tornado_src_analysis/featured_concurrent.jpg" referrerpolicy="no-referrer">
+            </div>tornado concurrent 实现解析。]]></description>
+</item>
+<item>
+    <title>tornado gen 实现解析</title>
+    <link>https://www.benzimu.com/tornado_gen/</link>
+    <pubDate>Fri, 10 Nov 2017 09:00:00 &#43;0800</pubDate>
+    <author>BenZimu</author>
+    <guid>https://www.benzimu.com/tornado_gen/</guid>
+    <description><![CDATA[<div class="featured-image">
+                <img src="/images/tornado_src_analysis/featured_gen.jpg" referrerpolicy="no-referrer">
+            </div>tornado gen 实现解析。]]></description>
+</item>
+<item>
+    <title>tornado 定时器 PeriodicCallback 实现解析</title>
+    <link>https://www.benzimu.com/tornado_ioloop_periodiccallback/</link>
+    <pubDate>Fri, 10 Nov 2017 09:00:00 &#43;0800</pubDate>
+    <author>BenZimu</author>
+    <guid>https://www.benzimu.com/tornado_ioloop_periodiccallback/</guid>
+    <description><![CDATA[<div class="featured-image">
+                <img src="/images/tornado_src_analysis/featured_PeriodicCallback.jpg" referrerpolicy="no-referrer">
+            </div>tornado 定时器 PeriodicCallback 实现解析。]]></description>
+</item>
+<item>
+    <title>tornado iostream 实现解析</title>
+    <link>https://www.benzimu.com/tornado_iostream/</link>
+    <pubDate>Mon, 06 Nov 2017 10:00:00 &#43;0800</pubDate>
+    <author>BenZimu</author>
+    <guid>https://www.benzimu.com/tornado_iostream/</guid>
+    <description><![CDATA[<div class="featured-image">
+                <img src="/images/tornado_src_analysis/featured_iostream.jpg" referrerpolicy="no-referrer">
+            </div>tornado iostream 封装了对 socket fd 底层数据的读取、写入操作。]]></description>
+</item>
+<item>
+    <title>tornado http1connection 实现解析</title>
+    <link>https://www.benzimu.com/tornado_http1connection/</link>
+    <pubDate>Mon, 06 Nov 2017 09:00:00 &#43;0800</pubDate>
+    <author>BenZimu</author>
+    <guid>https://www.benzimu.com/tornado_http1connection/</guid>
+    <description><![CDATA[<div class="featured-image">
+                <img src="/images/tornado_src_analysis/featured_http1connection.jpg" referrerpolicy="no-referrer">
+            </div>tornado http1connection 解析，主要是对 http 协议进行了封装。]]></description>
+</item>
+<item>
+    <title>tornado netutil 实现解析</title>
+    <link>https://www.benzimu.com/tornado_netutil/</link>
+    <pubDate>Mon, 25 Sep 2017 08:00:00 &#43;0800</pubDate>
+    <author>BenZimu</author>
+    <guid>https://www.benzimu.com/tornado_netutil/</guid>
+    <description><![CDATA[<div class="featured-image">
+                <img src="/images/tornado_src_analysis/featured_netutil.jpg" referrerpolicy="no-referrer">
+            </div>了解 tornado 网络工具类实现原理，进一步熟悉 socket 使用。]]></description>
+</item>
+<item>
+    <title>tornado httpserver 实现解析</title>
+    <link>https://www.benzimu.com/tornado_httpserver/</link>
+    <pubDate>Fri, 08 Sep 2017 08:00:00 &#43;0800</pubDate>
+    <author>BenZimu</author>
+    <guid>https://www.benzimu.com/tornado_httpserver/</guid>
+    <description><![CDATA[<div class="featured-image">
+                <img src="/images/tornado_src_analysis/featured_httpserver.jpg" referrerpolicy="no-referrer">
+            </div>tornado httpserver 实现解析。]]></description>
+</item>
+<item>
+    <title>tornado posix 实现解析</title>
+    <link>https://www.benzimu.com/tornado_platform_posix/</link>
+    <pubDate>Fri, 01 Sep 2017 08:00:00 &#43;0800</pubDate>
+    <author>BenZimu</author>
+    <guid>https://www.benzimu.com/tornado_platform_posix/</guid>
+    <description><![CDATA[<div class="featured-image">
+                <img src="/images/tornado_src_analysis/featured_posix.jpg" referrerpolicy="no-referrer">
+            </div>了解 tornado 中 Posix 平台特定功能的实现原理。]]></description>
+</item>
+<item>
+    <title>tornado util configurable 实现解析</title>
+    <link>https://www.benzimu.com/tornado_util_configurable/</link>
+    <pubDate>Thu, 31 Aug 2017 08:00:00 &#43;0800</pubDate>
+    <author>BenZimu</author>
+    <guid>https://www.benzimu.com/tornado_util_configurable/</guid>
+    <description><![CDATA[<div class="featured-image">
+                <img src="/images/tornado_src_analysis/featured_util_configurable.jpg" referrerpolicy="no-referrer">
+            </div>了解 tornado 中配置工具类的实现原理。]]></description>
+</item>
+</channel>
+</rss>
