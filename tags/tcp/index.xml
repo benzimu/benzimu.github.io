@@ -6,10 +6,10 @@
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>benzimuu@gmail.com (BenZimu)</managingEditor>
             <webMaster>benzimuu@gmail.com (BenZimu)</webMaster><lastBuildDate>Thu, 24 Aug 2017 09:00:00 &#43;0800</lastBuildDate><atom:link href="https://www.benzimu.com/tags/tcp/" rel="self" type="application/rss+xml" /><item>
     <title>Socket、TCP 详解</title>
-    <link>https://www.benzimu.com/socket_tcp/</link>
+    <link>https://www.benzimu.com/posts/socket_tcp/</link>
     <pubDate>Thu, 24 Aug 2017 09:00:00 &#43;0800</pubDate>
     <author>BenZimu</author>
-    <guid>https://www.benzimu.com/socket_tcp/</guid>
+    <guid>https://www.benzimu.com/posts/socket_tcp/</guid>
     <description><![CDATA[<div class="featured-image">
                 <img src="/images/tornado_src_analysis/featured_socket.jpg" referrerpolicy="no-referrer">
             </div>了解 Socket，以及 TCP 三次握手、四次挥手。]]></description>

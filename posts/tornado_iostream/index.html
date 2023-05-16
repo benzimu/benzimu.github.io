@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>tornado iostream 实现解析 - BenZimu&#39;s Blog</title><meta name="Description" content="凡事豫则立，不豫则废！-《礼记·中庸》"><meta property="og:title" content="tornado iostream 实现解析" />
+<meta property="og:description" content="tornado iostream 封装了对 socket fd 底层数据的读取、写入操作。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.benzimu.com/posts/tornado_iostream/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2017-11-06T10:00:00+08:00" />
+<meta property="article:modified_time" content="2022-10-16T20:31:56+08:00" /><meta property="og:site_name" content="BenZimu&#39;s Blog" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="tornado iostream 实现解析"/>
+<meta name="twitter:description" content="tornado iostream 封装了对 socket fd 底层数据的读取、写入操作。"/>
+<meta name="application-name" content="BenZimu&#39;s Blog">
+<meta name="apple-mobile-web-app-title" content="BenZimu&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://www.benzimu.com/posts/tornado_iostream/" /><link rel="prev" href="https://www.benzimu.com/posts/tornado_http1connection/" /><link rel="next" href="https://www.benzimu.com/posts/tornado_ioloop_periodiccallback/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "tornado iostream 实现解析",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/www.benzimu.com\/posts\/tornado_iostream\/"
+        },"genre": "posts","keywords": "Tornado","wordcount":  3240 ,
+        "url": "https:\/\/www.benzimu.com\/posts\/tornado_iostream\/","datePublished": "2017-11-06T10:00:00+08:00","dateModified": "2022-10-16T20:31:56+08:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "BenZimu"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="BenZimu&#39;s Blog">BenZimu&#39;s Blog</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> 文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/benzimu" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="BenZimu&#39;s Blog">BenZimu&#39;s Blog</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/benzimu" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content always-active" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">tornado iostream 实现解析</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="https://www.benzimu.com/" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>BenZimu</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/tornado-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Tornado 源码解析</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2017-11-06">2017-11-06</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 3240 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 7 分钟&nbsp;</div>
+        </div><div class="featured-image"><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="/images/tornado_src_analysis/featured_iostream.jpg"
+        data-srcset="/images/tornado_src_analysis/featured_iostream.jpg, /images/tornado_src_analysis/featured_iostream.jpg 1.5x, /images/tornado_src_analysis/featured_iostream.jpg 2x"
+        data-sizes="auto"
+        alt="/images/tornado_src_analysis/featured_iostream.jpg"
+        title="/images/tornado_src_analysis/featured_iostream.jpg" width="600" height="401" /></div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#tornado-iostream-实现解析">tornado iostream 实现解析</a>
+      <ul>
+        <li><a href="#tornadoiostreambaseiostreamread_until_regex">tornado.iostream.BaseIOStream.read_until_regex()</a></li>
+        <li><a href="#tornadoiostreambaseiostream_set_read_callback">tornado.iostream.BaseIOStream._set_read_callback()</a></li>
+        <li><a href="#tornadoiostreambaseiostream_try_inline_read">tornado.iostream.BaseIOStream._try_inline_read()</a></li>
+        <li><a href="#tornadoiostreambaseiostream_find_read_pos">tornado.iostream.BaseIOStream._find_read_pos()</a></li>
+        <li><a href="#tornadoiostreambaseiostream_read_to_buffer_loop">tornado.iostream.BaseIOStream._read_to_buffer_loop()</a></li>
+        <li><a href="#tornadoiostreambaseiostream_read_from_buffer">tornado.iostream.BaseIOStream._read_from_buffer()</a></li>
+        <li><a href="#tornadoiostreambaseiostream_run_read_callback">tornado.iostream.BaseIOStream._run_read_callback()</a></li>
+        <li><a href="#tornadoiostreambaseiostream_consume">tornado.iostream.BaseIOStream._consume()</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h2 id="tornado-iostream-实现解析">tornado iostream 实现解析</h2>
+<p>封装了对 socket fd 底层数据的读取、写入操作，针对不同的情况实现了几种不同的读取方式。</p>
+<h3 id="tornadoiostreambaseiostreamread_until_regex">tornado.iostream.BaseIOStream.read_until_regex()</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">read_until_regex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">regex</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_bytes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 设置读取完成后的回调函数</span>
+</span></span><span class="line"><span class="cl">    <span class="n">future</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_read_callback</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 编译正则表达式，并保存到self._read_regex</span>
+</span></span><span class="line"><span class="cl">    <span class="bp">self</span><span class="o">.</span><span class="n">_read_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">regex</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 保存最大读取数据长度到self._read_max_bytes</span>
+</span></span><span class="line"><span class="cl">    <span class="bp">self</span><span class="o">.</span><span class="n">_read_max_bytes</span> <span class="o">=</span> <span class="n">max_bytes</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_try_inline_read</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="n">UnsatisfiableReadError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># Handle this the same way as in _handle_events.</span>
+</span></span><span class="line"><span class="cl">        <span class="n">gen_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&#34;Unsatisfiable read, closing connection: </span><span class="si">%s</span><span class="s2">&#34;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">future</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">future</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># Ensure that the future doesn&#39;t log an error because its</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># failure was never examined.</span>
+</span></span><span class="line"><span class="cl">            <span class="n">future</span><span class="o">.</span><span class="n">add_done_callback</span><span class="p">(</span><span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">exception</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">        <span class="k">raise</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">future</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>通过正则表达式匹配客户端发来的数据，http协议规定了数据结构，每行数据后面都会有一个 CRLF，而请求行与请求头数据结尾也会有一个 CRLF，即请求头数据后面有两个 CRLF，请求体也是如此。</p>
+<p>CRLF 即为回车（Carriage-Return，CR，<code>\r</code>）、换行（Line-Feed，LF，<code>\n</code>）。Windows 下 CRLF 表示：<code>\r\n</code>；Unix 下 CRLF 表示：<code>\n</code>。</p>
+<p>tornado.http1connection.HTTP1Connection._read_message() 方法调用本方法传入的 regex 参数为 &ldquo;\r?\n\r?\n&rdquo;，刚好兼容了 Windows 和 Unix。</p>
+<h3 id="tornadoiostreambaseiostream_set_read_callback">tornado.iostream.BaseIOStream._set_read_callback()</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">_set_read_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_callback</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&#34;Already reading&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_future</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&#34;Already reading&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_read_callback</span> <span class="o">=</span> <span class="n">stack_context</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_read_future</span> <span class="o">=</span> <span class="n">TracebackFuture</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_future</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>通过 read_until_regex 方法读取请求数据时，是没有 callback 的，即 callback 为 None，所以_set_read_callback 会返回一个 Future 对象实例，用于返回异步执行结果。</p>
+<h3 id="tornadoiostreambaseiostream_try_inline_read">tornado.iostream.BaseIOStream._try_inline_read()</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">_try_inline_read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 尝试从缓存数据中完成当前读操作。</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 如果此次读操作能在无阻塞的情况下完成，则在下次IOLoop迭代中执行读回调函数，</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 否则为此次读事件在套接字上启动监听</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 查看是否从前一次的读操作中获取到了数据</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 第一部分</span>
+</span></span><span class="line"><span class="cl">    <span class="bp">self</span><span class="o">.</span><span class="n">_run_streaming_callback</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_read_pos</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">pos</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_read_from_buffer</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 第二部分</span>
+</span></span><span class="line"><span class="cl">    <span class="bp">self</span><span class="o">.</span><span class="n">_check_closed</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_to_buffer_loop</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># If there was an in _read_to_buffer, we called close() already,</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># but couldn&#39;t run the close callback because of _pending_callbacks.</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># Before we escape from this function, run the close callback if</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># applicable.</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_maybe_run_close_callback</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="k">raise</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">pos</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_read_from_buffer</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 第三部分</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># We couldn&#39;t satisfy the read inline, so either close the stream</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># or listen for new data.</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">closed</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_maybe_run_close_callback</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_add_io_state</span><span class="p">(</span><span class="n">ioloop</span><span class="o">.</span><span class="n">IOLoop</span><span class="o">.</span><span class="n">READ</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>方法可以分为三部分：</p>
+<ul>
+<li>第一部分</li>
+</ul>
+<p>首先会去检测前一次是否将数据读取到了缓存，即通过 self._find_read_pos() 获取到的 pos 是否为 None，如果不为 None，则表示已经读取数据完成（读取到足够大小的数据：max_bytes 参数、正则表达式匹配成功：regex 参数，或者遇到指定的分隔符：read_until() 方法中的 delimiter 参数），然后调用 self._read_from_buffer(pos) 将_read_future 加入 IOLoop；</p>
+<ul>
+<li>第二部分</li>
+</ul>
+<p>调用 self._read_to_buffer_loop() 循环读取请求数据，方法中封装了第一部分的部分操作，接下来与第一部分操作一致；</p>
+<ul>
+<li>第三部分</li>
+</ul>
+<p>判断该stream连接是否断开，如果已经断开调用关闭回调函数，否则将该连接再次放到 IOLoop 中，继续读取数据。</p>
+<h3 id="tornadoiostreambaseiostream_find_read_pos">tornado.iostream.BaseIOStream._find_read_pos()</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">_find_read_pos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 试图在读取缓冲区中找到满足当前待读取的位置</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 如果能够满足当前读取，则返回缓冲区中的位置;如果不能，则返回None。</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_read_bytes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span>
+</span></span><span class="line"><span class="cl">        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_read_buffer_size</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_bytes</span> <span class="ow">or</span>
+</span></span><span class="line"><span class="cl">            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_read_partial</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_buffer_size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">))):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">num_bytes</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_read_bytes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_buffer_size</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">num_bytes</span>
+</span></span><span class="line"><span class="cl">    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_delimiter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># Multi-byte delimiters (e.g. &#39;\r\n&#39;) may straddle two</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># chunks in the read buffer, so we can&#39;t easily find them</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># without collapsing the buffer.  However, since protocols</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># using delimited reads (as opposed to reads of a known</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># length) tend to be &#34;line&#34; oriented, the delimiter is likely</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># to be in the first few chunks.  Merge the buffer gradually</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># since large merges are relatively expensive and get undone in</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># _consume().</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_buffer</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">loc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_buffer</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_read_delimiter</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                                            <span class="bp">self</span><span class="o">.</span><span class="n">_read_buffer_pos</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">loc</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">loc</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_buffer_pos</span>
+</span></span><span class="line"><span class="cl">                <span class="n">delimiter_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_read_delimiter</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="bp">self</span><span class="o">.</span><span class="n">_check_max_bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_read_delimiter</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                                        <span class="n">loc</span> <span class="o">+</span> <span class="n">delimiter_len</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="n">loc</span> <span class="o">+</span> <span class="n">delimiter_len</span>
+</span></span><span class="line"><span class="cl">            <span class="bp">self</span><span class="o">.</span><span class="n">_check_max_bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_read_delimiter</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                                    <span class="bp">self</span><span class="o">.</span><span class="n">_read_buffer_size</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_regex</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># self._read_buffer在_read_to_buffer方法中定义</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_buffer</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># 在已读取的数据中从上一次的位置开始匹配正则，self._read_buffer_pos在</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># _consume方法中定义</span>
+</span></span><span class="line"><span class="cl">            <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_regex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_read_buffer</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                                        <span class="bp">self</span><span class="o">.</span><span class="n">_read_buffer_pos</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># 匹配成功</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="c1"># 获取本次读取的数据大小</span>
+</span></span><span class="line"><span class="cl">                <span class="n">loc</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">end</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_buffer_pos</span>
+</span></span><span class="line"><span class="cl">                <span class="c1"># 判断本次读取的数据是否超过了最大读取数据量，如果是则</span>
+</span></span><span class="line"><span class="cl">                <span class="c1"># 报错UnsatisfiableReadError</span>
+</span></span><span class="line"><span class="cl">                <span class="bp">self</span><span class="o">.</span><span class="n">_check_max_bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_read_regex</span><span class="p">,</span> <span class="n">loc</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="n">loc</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># 如果没有匹配到正则表达式，则检查读取的数据量是否超过了最大读取数据量</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># self._read_buffer_size在_read_to_buffer方法中定义</span>
+</span></span><span class="line"><span class="cl">            <span class="bp">self</span><span class="o">.</span><span class="n">_check_max_bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_read_regex</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_buffer_size</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="kc">None</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在 read_until_regex() 方法中，self._read_regex 是存在的，self._read_delimiter 是针对 read_until() 方法的操作。在此方法中可知，传入 read_until_regex() 的 max_bytes 必须要大于 self.read_chunk_size（socket.recv 每次循环接收的数据量），否则会直接报错。</p>
+<h3 id="tornadoiostreambaseiostream_read_to_buffer_loop">tornado.iostream.BaseIOStream._read_to_buffer_loop()</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">_read_to_buffer_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># This method is called from _handle_read and _try_inline_read.</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># 根据不同的方法调用获取对应的目标数据量</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_bytes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">target_bytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_bytes</span>
+</span></span><span class="line"><span class="cl">        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_max_bytes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">target_bytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_max_bytes</span>
+</span></span><span class="line"><span class="cl">        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">reading</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># 对于没有max_bytes参数的read_until或者read_until_close，应在扫描分</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># 隔符之前尽可能多地进行读取。</span>
+</span></span><span class="line"><span class="cl">            <span class="n">target_bytes</span> <span class="o">=</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">target_bytes</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">        <span class="n">next_find_pos</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1"># 假装有一个挂起的回调，以便_read_to_buffer中的EOF不会触发立即关闭回调。 </span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># 在这个方法（_try_inline_read）的最后，我们要么通过_read_from_buffer</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># 建立一个真正的等待回调，要么运行关闭回调。避免程序中途退出。因为</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># 在_maybe_run_close_callback、_maybe_add_error_listener等方法中都</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># 会比较self._pending_callbacks参数值，如果该值不为0，则表示该loop过程</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># 还在执行，不能去运行关闭回调。最后的finally块中会递减该值。</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_pending_callbacks</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">closed</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># 从socket中读数据，直到得到EWOULDBLOCK（当一个非阻塞的操作没有数据</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># 操作时，如读操作时，缓存区空了，此时没有数据读了，写操作时，缓存区已</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># 满，无法再写入）或者类似的错误。在Windows上为EWOULDBLOCK，Linux</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># 上为EAGAIN</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_to_buffer</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="k">break</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="bp">self</span><span class="o">.</span><span class="n">_run_streaming_callback</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1"># 如果已经读完了所有可以使用的字节，就跳出这个循环。不能在</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># 这里调用read_from_buffer，因为它与pending_callback和</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># error_listener机制的微妙交互。</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># 如果已经达到target_bytes，则已经读取完成了。</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="n">target_bytes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span>
+</span></span><span class="line"><span class="cl">                    <span class="bp">self</span><span class="o">.</span><span class="n">_read_buffer_size</span> <span class="o">&gt;=</span> <span class="n">target_bytes</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">                <span class="k">break</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1"># 否则，需要调用更加昂贵的find_read_pos。 在每次读取时这样做</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># 效率不高，所以在第一次读取以及每当读取缓冲区大小加倍时都要这样做。</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_buffer_size</span> <span class="o">&gt;=</span> <span class="n">next_find_pos</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_read_pos</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="n">pos</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">return</span> <span class="n">pos</span>
+</span></span><span class="line"><span class="cl">                <span class="n">next_find_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_buffer_size</span> <span class="o">*</span> <span class="mi">2</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_read_pos</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">finally</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># 递减该属性值，以便能执行关闭回调等操作</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_pending_callbacks</span> <span class="o">-=</span> <span class="mi">1</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>读取底层 socket fd 中的数据，将其保存到缓存中。通过判断该 socket 连接是否断开进行循环读取操作，最主要的就是 self._read_to_buffer() 方法，封装了对 socket 中读取到的数据处理过程。最终会调用 socket 原生的读取函数 socket.recv(buffer)，即 read_from_fd() 函数，此函数在 IOStream 中被实现。</p>
+<h3 id="tornadoiostreambaseiostream_read_from_buffer">tornado.iostream.BaseIOStream._read_from_buffer()</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">_read_from_buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 尝试从缓冲区中完成当前正在等待的读取</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 重置参数</span>
+</span></span><span class="line"><span class="cl">    <span class="bp">self</span><span class="o">.</span><span class="n">_read_bytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_delimiter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_regex</span> <span class="o">=</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl">    <span class="bp">self</span><span class="o">.</span><span class="n">_read_partial</span> <span class="o">=</span> <span class="kc">False</span>
+</span></span><span class="line"><span class="cl">    <span class="bp">self</span><span class="o">.</span><span class="n">_run_read_callback</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="tornadoiostreambaseiostream_run_read_callback">tornado.iostream.BaseIOStream._run_read_callback()</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">_run_read_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">streaming</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 判断是否要运行stream回调函数，read_until_regex没有该函数</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">streaming</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_streaming_callback</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_callback</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_read_callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_streaming_callback</span> <span class="o">=</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># 如果self._read_future不为空</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_future</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">assert</span> <span class="n">callback</span> <span class="ow">is</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl">            <span class="n">future</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_future</span>
+</span></span><span class="line"><span class="cl">            <span class="bp">self</span><span class="o">.</span><span class="n">_read_future</span> <span class="o">=</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl">            <span class="n">future</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_consume</span><span class="p">(</span><span class="n">size</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">assert</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_read_future</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="n">streaming</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_run_callback</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_consume</span><span class="p">(</span><span class="n">size</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># If we scheduled a callback, we will add the error listener</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># afterwards.  If we didn&#39;t, we have to do it now.</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_maybe_add_error_listener</span><span class="p">()</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>首先通过 streaming 参数，决定 callback 是何值。streaming 参数针对 read_bytes、read_until_close 这两个读取方法，而 read_until、read_until_regex 没有 streaming_callback。针对没有 streaming_callback 的方法，会判断 self._read_callback 和 self._read_future，如果 self._read_future 不会空，则会使用 Future 对象将数据返回，否则通过 callback 回调返回。Future 详解参考：<a href="https://www.benzimu.com/posts/tornado_concurrent/" rel="">tornado_concurrent</a></p>
+<h3 id="tornadoiostreambaseiostream_consume">tornado.iostream.BaseIOStream._consume()</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">_consume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 消耗缓存区的loc数量数据，并将其返回</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">loc</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="sa">b</span><span class="s2">&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">assert</span> <span class="n">loc</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_buffer_size</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 获取已读取到缓存区的总数据self._read_buffer，并截取其中从位置</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># self._read_buffer_pos（最开始为0）到self._read_buffer_pos + loc</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 中的数据</span>
+</span></span><span class="line"><span class="cl">    <span class="n">b</span> <span class="o">=</span> <span class="p">(</span><span class="nb">memoryview</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_read_buffer</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_read_buffer_pos</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">_read_buffer_pos</span> <span class="o">+</span> <span class="n">loc</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">            <span class="p">)</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="bp">self</span><span class="o">.</span><span class="n">_read_buffer_pos</span> <span class="o">+=</span> <span class="n">loc</span>
+</span></span><span class="line"><span class="cl">    <span class="bp">self</span><span class="o">.</span><span class="n">_read_buffer_size</span> <span class="o">-=</span> <span class="n">loc</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># Amortized O(1) shrink</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># (this heuristic is implemented natively in Python 3.4+</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">#  but is replicated here for Python 2)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_buffer_pos</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_buffer_size</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_buffer</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">_read_buffer_pos</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_read_buffer_pos</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">b</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2022-10-16</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/posts/tornado_iostream/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://www.benzimu.com/posts/tornado_iostream/" data-title="tornado iostream 实现解析" data-hashtags="Tornado"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://www.benzimu.com/posts/tornado_iostream/" data-hashtag="Tornado"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://www.benzimu.com/posts/tornado_iostream/" data-title="tornado iostream 实现解析"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://www.benzimu.com/posts/tornado_iostream/" data-title="tornado iostream 实现解析"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@7.3.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://www.benzimu.com/posts/tornado_iostream/" data-title="tornado iostream 实现解析" data-image="/images/tornado_src_analysis/featured_iostream.jpg"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/tornado/">Tornado</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/tornado_http1connection/" class="prev" rel="prev" title="tornado http1connection 实现解析"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>tornado http1connection 实现解析</a>
+            <a href="/posts/tornado_ioloop_periodiccallback/" class="next" rel="next" title="tornado 定时器 PeriodicCallback 实现解析">tornado 定时器 PeriodicCallback 实现解析<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.104.3">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="https://www.benzimu.com/" target="_blank">BenZimu</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":150},"comment":{},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":30,"type":"lunr"}};</script><script type="text/javascript" src="/js/theme.min.js"></script><script type="text/javascript">
+            window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());
+            gtag('config', 'G-ZMK8SVQ014', { 'anonymize_ip': true });
+        </script><script type="text/javascript" src="https://www.googletagmanager.com/gtag/js?id=G-ZMK8SVQ014" async></script></body>
+</html>
