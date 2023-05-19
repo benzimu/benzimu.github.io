@@ -1,0 +1,18 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>Hugo 博客 - 分类 - BenZimu&#39;s Blog</title>
+        <link>https://www.benzimu.com/categories/hugo-%E5%8D%9A%E5%AE%A2/</link>
+        <description>Hugo 博客 - 分类 - BenZimu&#39;s Blog</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>benzimuu@gmail.com (BenZimu)</managingEditor>
+            <webMaster>benzimuu@gmail.com (BenZimu)</webMaster><lastBuildDate>Sun, 19 May 2019 11:20:30 &#43;0800</lastBuildDate><atom:link href="https://www.benzimu.com/categories/hugo-%E5%8D%9A%E5%AE%A2/" rel="self" type="application/rss+xml" /><item>
+    <title>Hugo &#43; Github Pages 搭建个人博客</title>
+    <link>https://www.benzimu.com/posts/hugo_github_pages/</link>
+    <pubDate>Sun, 19 May 2019 11:20:30 &#43;0800</pubDate>
+    <author>BenZimu</author>
+    <guid>https://www.benzimu.com/posts/hugo_github_pages/</guid>
+    <description><![CDATA[<div class="featured-image">
+                <img src="/images/hugo_github_pages/featured_hugo_github_pages.jpg" referrerpolicy="no-referrer">
+            </div>Hugo + Github Pages 搭建个人博客]]></description>
+</item>
+</channel>
+</rss>

@@ -2,10 +2,15 @@
     xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
     ><url>
-            <loc>https://www.benzimu.com/</loc><lastmod>2022-10-16T20:31:56&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
-            <loc>https://www.benzimu.com/categories/</loc><lastmod>2022-10-16T20:31:56&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
-            <loc>https://www.benzimu.com/posts/</loc><lastmod>2022-10-16T20:31:56&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
-            <loc>https://www.benzimu.com/tags/</loc><lastmod>2022-10-16T20:31:56&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
+            <loc>https://www.benzimu.com/</loc><lastmod>2023-05-19T14:43:45&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://www.benzimu.com/categories/</loc><lastmod>2023-05-19T14:43:45&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://www.benzimu.com/tags/github-pages/</loc><lastmod>2023-05-19T14:43:45&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://www.benzimu.com/tags/hugo/</loc><lastmod>2023-05-19T14:43:45&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://www.benzimu.com/posts/hugo_github_pages/</loc><lastmod>2023-05-19T14:43:45&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://www.benzimu.com/categories/hugo-%E5%8D%9A%E5%AE%A2/</loc><lastmod>2023-05-19T14:43:45&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://www.benzimu.com/tags/loveit/</loc><lastmod>2023-05-19T14:43:45&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://www.benzimu.com/posts/</loc><lastmod>2023-05-19T14:43:45&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://www.benzimu.com/tags/</loc><lastmod>2023-05-19T14:43:45&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
             <loc>https://www.benzimu.com/tags/tornado/</loc><lastmod>2022-10-16T20:31:56&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
             <loc>https://www.benzimu.com/posts/tornado_multi_processes/</loc><lastmod>2022-10-16T20:31:56&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
             <loc>https://www.benzimu.com/categories/tornado-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/</loc><lastmod>2022-10-16T20:31:56&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url><url>
