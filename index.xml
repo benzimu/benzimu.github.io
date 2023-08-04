@@ -4,9 +4,19 @@
         <link>https://www.benzimu.com/</link>
         <description>凡事豫则立，不豫则废！-《礼记·中庸》</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>benzimuu@gmail.com (BenZimu)</managingEditor>
-            <webMaster>benzimuu@gmail.com (BenZimu)</webMaster><lastBuildDate>Sun, 19 May 2019 11:20:30 &#43;0800</lastBuildDate>
+            <webMaster>benzimuu@gmail.com (BenZimu)</webMaster><lastBuildDate>Sun, 02 Jul 2023 20:10:15 &#43;0800</lastBuildDate>
             <atom:link href="https://www.benzimu.com/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>使用 kubeadm 安装 k8s 集群</title>
+    <link>https://www.benzimu.com/posts/k8s_deploy/</link>
+    <pubDate>Sun, 02 Jul 2023 20:10:15 &#43;0800</pubDate>
+    <author>BenZimu</author>
+    <guid>https://www.benzimu.com/posts/k8s_deploy/</guid>
+    <description><![CDATA[<div class="featured-image">
+                <img src="/images/kubernetes/featured_k8s_deploy.jpg" referrerpolicy="no-referrer">
+            </div>使用 kubeadm 在 CentOS 8.3 上安装 k8s 集群]]></description>
+</item>
+<item>
     <title>Hugo &#43; Github Pages 搭建个人博客</title>
     <link>https://www.benzimu.com/posts/hugo_github_pages/</link>
     <pubDate>Sun, 19 May 2019 11:20:30 &#43;0800</pubDate>
@@ -95,16 +105,6 @@
     <description><![CDATA[<div class="featured-image">
                 <img src="/images/tornado_src_analysis/featured_httpserver.jpg" referrerpolicy="no-referrer">
             </div>tornado httpserver 实现解析。]]></description>
-</item>
-<item>
-    <title>tornado posix 实现解析</title>
-    <link>https://www.benzimu.com/posts/tornado_platform_posix/</link>
-    <pubDate>Fri, 01 Sep 2017 08:00:00 &#43;0800</pubDate>
-    <author>BenZimu</author>
-    <guid>https://www.benzimu.com/posts/tornado_platform_posix/</guid>
-    <description><![CDATA[<div class="featured-image">
-                <img src="/images/tornado_src_analysis/featured_posix.jpg" referrerpolicy="no-referrer">
-            </div>了解 tornado 中 Posix 平台特定功能的实现原理。]]></description>
 </item>
 </channel>
 </rss>

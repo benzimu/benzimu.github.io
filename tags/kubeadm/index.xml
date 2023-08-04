@@ -1,0 +1,18 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>Kubeadm - 标签 - BenZimu&#39;s Blog</title>
+        <link>https://www.benzimu.com/tags/kubeadm/</link>
+        <description>Kubeadm - 标签 - BenZimu&#39;s Blog</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>benzimuu@gmail.com (BenZimu)</managingEditor>
+            <webMaster>benzimuu@gmail.com (BenZimu)</webMaster><lastBuildDate>Sun, 02 Jul 2023 20:10:15 &#43;0800</lastBuildDate><atom:link href="https://www.benzimu.com/tags/kubeadm/" rel="self" type="application/rss+xml" /><item>
+    <title>使用 kubeadm 安装 k8s 集群</title>
+    <link>https://www.benzimu.com/posts/k8s_deploy/</link>
+    <pubDate>Sun, 02 Jul 2023 20:10:15 &#43;0800</pubDate>
+    <author>BenZimu</author>
+    <guid>https://www.benzimu.com/posts/k8s_deploy/</guid>
+    <description><![CDATA[<div class="featured-image">
+                <img src="/images/kubernetes/featured_k8s_deploy.jpg" referrerpolicy="no-referrer">
+            </div>使用 kubeadm 在 CentOS 8.3 上安装 k8s 集群]]></description>
+</item>
+</channel>
+</rss>
