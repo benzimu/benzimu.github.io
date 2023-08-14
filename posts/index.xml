@@ -4,7 +4,17 @@
         <link>https://www.benzimu.com/posts/</link>
         <description>所有文章 | BenZimu&#39;s Blog</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>benzimuu@gmail.com (BenZimu)</managingEditor>
-            <webMaster>benzimuu@gmail.com (BenZimu)</webMaster><lastBuildDate>Sun, 02 Jul 2023 20:10:15 &#43;0800</lastBuildDate><atom:link href="https://www.benzimu.com/posts/" rel="self" type="application/rss+xml" /><item>
+            <webMaster>benzimuu@gmail.com (BenZimu)</webMaster><lastBuildDate>Sat, 15 Jul 2023 19:12:11 &#43;0800</lastBuildDate><atom:link href="https://www.benzimu.com/posts/" rel="self" type="application/rss+xml" /><item>
+    <title>Tcpdump &#43; Wireshark 分析 Kafka 数据包</title>
+    <link>https://www.benzimu.com/posts/tcpdump_producer_ip/</link>
+    <pubDate>Sat, 15 Jul 2023 19:12:11 &#43;0800</pubDate>
+    <author>BenZimu</author>
+    <guid>https://www.benzimu.com/posts/tcpdump_producer_ip/</guid>
+    <description><![CDATA[<div class="featured-image">
+                <img src="/images/kafka/tcpdump/featured_tcpdump_kafka.jpg" referrerpolicy="no-referrer">
+            </div>使用 Tcpdump + Wireshark 抓包获取 Kafka 指定 Topic 生产者连接 IP]]></description>
+</item>
+<item>
     <title>使用 kubeadm 安装 k8s 集群</title>
     <link>https://www.benzimu.com/posts/k8s_deploy/</link>
     <pubDate>Sun, 02 Jul 2023 20:10:15 &#43;0800</pubDate>
@@ -93,16 +103,6 @@
     <description><![CDATA[<div class="featured-image">
                 <img src="/images/tornado_src_analysis/featured_netutil.jpg" referrerpolicy="no-referrer">
             </div>了解 tornado 网络工具类实现原理，进一步熟悉 socket 使用。]]></description>
-</item>
-<item>
-    <title>tornado httpserver 实现解析</title>
-    <link>https://www.benzimu.com/posts/tornado_httpserver/</link>
-    <pubDate>Fri, 08 Sep 2017 08:00:00 &#43;0800</pubDate>
-    <author>BenZimu</author>
-    <guid>https://www.benzimu.com/posts/tornado_httpserver/</guid>
-    <description><![CDATA[<div class="featured-image">
-                <img src="/images/tornado_src_analysis/featured_httpserver.jpg" referrerpolicy="no-referrer">
-            </div>tornado httpserver 实现解析。]]></description>
 </item>
 </channel>
 </rss>

@@ -1,0 +1,18 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>Kafka - 标签 - BenZimu&#39;s Blog</title>
+        <link>https://www.benzimu.com/tags/kafka/</link>
+        <description>Kafka - 标签 - BenZimu&#39;s Blog</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>benzimuu@gmail.com (BenZimu)</managingEditor>
+            <webMaster>benzimuu@gmail.com (BenZimu)</webMaster><lastBuildDate>Sat, 15 Jul 2023 19:12:11 &#43;0800</lastBuildDate><atom:link href="https://www.benzimu.com/tags/kafka/" rel="self" type="application/rss+xml" /><item>
+    <title>Tcpdump &#43; Wireshark 分析 Kafka 数据包</title>
+    <link>https://www.benzimu.com/posts/tcpdump_producer_ip/</link>
+    <pubDate>Sat, 15 Jul 2023 19:12:11 &#43;0800</pubDate>
+    <author>BenZimu</author>
+    <guid>https://www.benzimu.com/posts/tcpdump_producer_ip/</guid>
+    <description><![CDATA[<div class="featured-image">
+                <img src="/images/kafka/tcpdump/featured_tcpdump_kafka.jpg" referrerpolicy="no-referrer">
+            </div>使用 Tcpdump + Wireshark 抓包获取 Kafka 指定 Topic 生产者连接 IP]]></description>
+</item>
+</channel>
+</rss>
