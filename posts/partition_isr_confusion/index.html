@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Topic partition ISR 混乱，为 AR 超集 - BenZimu&#39;s Blog</title><meta name="Description" content="凡事豫则立，不豫则废！-《礼记·中庸》"><meta property="og:url" content="https://www.benzimu.com/posts/partition_isr_confusion/">
+  <meta property="og:site_name" content="BenZimu&#39;s Blog">
+  <meta property="og:title" content="Topic partition ISR 混乱，为 AR 超集">
+  <meta property="og:description" content="Topic partition ISR 混乱，为 AR 超集，与实际逻辑相悖">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-02-25T20:30:10+08:00">
+    <meta property="article:modified_time" content="2024-07-30T22:59:29+08:00">
+    <meta property="article:tag" content="Kafka">
+    <meta property="article:tag" content="ISR">
+    <meta property="article:tag" content="AR">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Topic partition ISR 混乱，为 AR 超集">
+  <meta name="twitter:description" content="Topic partition ISR 混乱，为 AR 超集，与实际逻辑相悖">
+<meta name="application-name" content="BenZimu&#39;s Blog">
+<meta name="apple-mobile-web-app-title" content="BenZimu&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://www.benzimu.com/posts/partition_isr_confusion/" /><link rel="prev" href="https://www.benzimu.com/posts/tcpdump_producer_ip/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Topic partition ISR 混乱，为 AR 超集",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/www.benzimu.com\/posts\/partition_isr_confusion\/"
+        },"genre": "posts","keywords": "Kafka, ISR, AR","wordcount":  290 ,
+        "url": "https:\/\/www.benzimu.com\/posts\/partition_isr_confusion\/","datePublished": "2024-02-25T20:30:10+08:00","dateModified": "2024-07-30T22:59:29+08:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "BenZimu"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="BenZimu&#39;s Blog">BenZimu&#39;s Blog</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> 文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/benzimu" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="BenZimu&#39;s Blog">BenZimu&#39;s Blog</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/benzimu" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content always-active" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Topic partition ISR 混乱，为 AR 超集</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="https://www.benzimu.com/" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>BenZimu</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kafka/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Kafka</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2024-02-25">2024-02-25</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 290 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 1 分钟&nbsp;</div>
+        </div><div class="featured-image"><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="/images/kafka/featured_partition_isr_confusion.jpg"
+        data-srcset="/images/kafka/featured_partition_isr_confusion.jpg, /images/kafka/featured_partition_isr_confusion.jpg 1.5x, /images/kafka/featured_partition_isr_confusion.jpg 2x"
+        data-sizes="auto"
+        alt="/images/kafka/featured_partition_isr_confusion.jpg"
+        title="/images/kafka/featured_partition_isr_confusion.jpg" width="600" height="400" /></div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#topic-分区-isr-混乱为-ar-超集">Topic 分区 ISR 混乱，为 AR 超集</a>
+      <ul>
+        <li><a href="#背景说明">背景说明</a></li>
+        <li><a href="#问题排查">问题排查</a></li>
+        <li><a href="#解决方案">解决方案</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h2 id="topic-分区-isr-混乱为-ar-超集">Topic 分区 ISR 混乱，为 AR 超集</h2>
+<h3 id="背景说明">背景说明</h3>
+<p>有一个四节点的 Kafka 集群，Broker id 分别为 1、2、3、4。修改集群配置后滚动重启各节点，重启完成后，生产者写入消息失败。</p>
+<h3 id="问题排查">问题排查</h3>
+<ul>
+<li>
+<p>查看 Broker 日志，有如下报错：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-Text" data-lang="Text"><span class="line"><span class="cl">Uncaught exception in scheduled task &#39;isr-expiration&#39;
+</span></span><span class="line"><span class="cl">org.apache.kafka.common.errors.NotLeaderOrFollowerException: Replica with id 2 is not available on broker 1
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="./partition_isr_confusion_01.png"
+        data-srcset="./partition_isr_confusion_01.png, ./partition_isr_confusion_01.png 1.5x, ./partition_isr_confusion_01.png 2x"
+        data-sizes="auto"
+        alt="./partition_isr_confusion_01.png"
+        title="image" /></p>
+<p>该错误信息与官方 issue <a href="https://issues.apache.org/jira/browse/KAFKA-9672" target="_blank" rel="noopener noreffer ">KAFKA-9672</a> 类似，均是由于 Broker 节点异常下线导致。</p>
+</li>
+<li>
+<p>查看 Topic 详情，此时出现部分 Topic 分区 ISR 混乱情况，即 ISR 副本集与 AR 副本集不一致，现象显示 ISR 为 AR 超集，与实际情况相悖。如图所示：</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="./partition_isr_confusion_02.png"
+        data-srcset="./partition_isr_confusion_02.png, ./partition_isr_confusion_02.png 1.5x, ./partition_isr_confusion_02.png 2x"
+        data-sizes="auto"
+        alt="./partition_isr_confusion_02.png"
+        title="image" /></p>
+</li>
+</ul>
+<h3 id="解决方案">解决方案</h3>
+<ol>
+<li>
+<p>直接修改 ZooKeeper 中 Topic 分区 ISR 信息，如图：</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="./partition_isr_confusion_03.png"
+        data-srcset="./partition_isr_confusion_03.png, ./partition_isr_confusion_03.png 1.5x, ./partition_isr_confusion_03.png 2x"
+        data-sizes="auto"
+        alt="./partition_isr_confusion_03.png"
+        title="image" /></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 获取指定 topic 状态信息</span>
+</span></span><span class="line"><span class="cl">get /brokers/topics/testtopic/partitions/0/state
+</span></span><span class="line"><span class="cl"><span class="c1"># 手动修改 topic isr 信息</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> /brokers/topics/testtopic/partitions/0/state <span class="o">{</span><span class="s2">&#34;controller_epoch&#34;</span>:1,<span class="s2">&#34;leader&#34;</span>:3,<span class="s2">&#34;version&#34;</span>:1,<span class="s2">&#34;leader_epoch&#34;</span>:0,<span class="s2">&#34;isr&#34;</span>:<span class="o">[</span>3,1,2<span class="o">]}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>修改完成后，需删除 zk 上 /controller 节点，重新选举 Controller，用于更新 Kafka 集群控制器内存数据</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">delete /controller
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ol>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2024-07-30</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/posts/partition_isr_confusion/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://www.benzimu.com/posts/partition_isr_confusion/" data-title="Topic partition ISR 混乱，为 AR 超集" data-hashtags="Kafka,ISR,AR"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://www.benzimu.com/posts/partition_isr_confusion/" data-hashtag="Kafka"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://www.benzimu.com/posts/partition_isr_confusion/" data-title="Topic partition ISR 混乱，为 AR 超集"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://www.benzimu.com/posts/partition_isr_confusion/" data-title="Topic partition ISR 混乱，为 AR 超集"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@7.3.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://www.benzimu.com/posts/partition_isr_confusion/" data-title="Topic partition ISR 混乱，为 AR 超集" data-image="/images/kafka/featured_partition_isr_confusion.jpg"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/kafka/">Kafka</a>,&nbsp;<a href="/tags/isr/">ISR</a>,&nbsp;<a href="/tags/ar/">AR</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/tcpdump_producer_ip/" class="prev" rel="prev" title="Tcpdump &#43; Wireshark 分析 Kafka 数据包"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>Tcpdump + Wireshark 分析 Kafka 数据包</a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.129.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2024</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="https://www.benzimu.com/" target="_blank">BenZimu</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":150},"comment":{},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":30,"type":"lunr"}};</script><script type="text/javascript" src="/js/theme.min.js"></script><script type="text/javascript">
+            window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());
+            gtag('config', 'G-ZMK8SVQ014', { 'anonymize_ip': true });
+        </script><script type="text/javascript" src="https://www.googletagmanager.com/gtag/js?id=G-ZMK8SVQ014" async></script></body>
+</html>

@@ -4,16 +4,26 @@
         <link>https://www.benzimu.com/</link>
         <description>凡事豫则立，不豫则废！-《礼记·中庸》</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>benzimuu@gmail.com (BenZimu)</managingEditor>
-            <webMaster>benzimuu@gmail.com (BenZimu)</webMaster><lastBuildDate>Sat, 15 Jul 2023 19:12:11 &#43;0800</lastBuildDate>
+            <webMaster>benzimuu@gmail.com (BenZimu)</webMaster><lastBuildDate>Sun, 25 Feb 2024 20:30:10 &#43;0800</lastBuildDate>
             <atom:link href="https://www.benzimu.com/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>Topic partition ISR 混乱，为 AR 超集</title>
+    <link>https://www.benzimu.com/posts/partition_isr_confusion/</link>
+    <pubDate>Sun, 25 Feb 2024 20:30:10 &#43;0800</pubDate>
+    <author>BenZimu</author>
+    <guid>https://www.benzimu.com/posts/partition_isr_confusion/</guid>
+    <description><![CDATA[<div class="featured-image">
+                <img src="/images/kafka/featured_partition_isr_confusion.jpg" referrerpolicy="no-referrer">
+            </div>Topic partition ISR 混乱，为 AR 超集，与实际逻辑相悖]]></description>
+</item>
+<item>
     <title>Tcpdump &#43; Wireshark 分析 Kafka 数据包</title>
     <link>https://www.benzimu.com/posts/tcpdump_producer_ip/</link>
     <pubDate>Sat, 15 Jul 2023 19:12:11 &#43;0800</pubDate>
     <author>BenZimu</author>
     <guid>https://www.benzimu.com/posts/tcpdump_producer_ip/</guid>
     <description><![CDATA[<div class="featured-image">
-                <img src="/images/kafka/tcpdump_producer_ip/featured_tcpdump_producer_ip.jpg" referrerpolicy="no-referrer">
+                <img src="/images/kafka/featured_tcpdump_producer_ip.jpg" referrerpolicy="no-referrer">
             </div>使用 Tcpdump + Wireshark 抓包获取 Kafka 指定 Topic 生产者连接 IP]]></description>
 </item>
 <item>
@@ -95,16 +105,6 @@
     <description><![CDATA[<div class="featured-image">
                 <img src="/images/tornado_src_analysis/featured_http1connection.jpg" referrerpolicy="no-referrer">
             </div>tornado http1connection 解析，主要是对 http 协议进行了封装。]]></description>
-</item>
-<item>
-    <title>tornado netutil 实现解析</title>
-    <link>https://www.benzimu.com/posts/tornado_netutil/</link>
-    <pubDate>Mon, 25 Sep 2017 08:00:00 &#43;0800</pubDate>
-    <author>BenZimu</author>
-    <guid>https://www.benzimu.com/posts/tornado_netutil/</guid>
-    <description><![CDATA[<div class="featured-image">
-                <img src="/images/tornado_src_analysis/featured_netutil.jpg" referrerpolicy="no-referrer">
-            </div>了解 tornado 网络工具类实现原理，进一步熟悉 socket 使用。]]></description>
 </item>
 </channel>
 </rss>
