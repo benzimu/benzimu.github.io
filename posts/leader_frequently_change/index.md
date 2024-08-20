@@ -55,7 +55,7 @@ etcd leader 异常切换期间，虚拟机 CPU、内存使用率均在正常范�
 
 但磁盘监控中存在一个异常指标，disk.io.msec_write（所有写入操作所花费的总时间）：
 
-![image](./leader_frequently_change_03.png)
+![leader_frequently_change_03](./leader_frequently_change_03.png "leader_frequently_change_03")
 
 从监控看该指标最高达到60s，且每次峰值均能与 etcd `slow fdatasync` 日志时间吻合，可确认 etcd 频繁 leader changed 与磁盘性能有关。
 

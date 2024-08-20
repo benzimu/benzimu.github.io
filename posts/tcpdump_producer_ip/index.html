@@ -28,7 +28,7 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/www.benzimu.com\/posts\/tcpdump_producer_ip\/"
-        },"genre": "posts","keywords": "Kafka, Tcpdump, Wireshark","wordcount":  688 ,
+        },"genre": "posts","keywords": "Kafka, Tcpdump, Wireshark","wordcount":  694 ,
         "url": "https:\/\/www.benzimu.com\/posts\/tcpdump_producer_ip\/","datePublished": "2023-07-15T19:12:11+08:00","dateModified": "2024-07-30T22:59:29+08:00","publisher": {
             "@type": "Organization",
             "name": ""},"author": {
@@ -102,7 +102,7 @@
             <div class="toc-content always-active" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Tcpdump + Wireshark 分析 Kafka 数据包</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="https://www.benzimu.com/" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>BenZimu</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kafka/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Kafka</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2023-07-15">2023-07-15</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 688 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2023-07-15">2023-07-15</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 694 字&nbsp;
                 <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 2 分钟&nbsp;</div>
         </div><div class="featured-image"><img
         class="lazyload"
@@ -182,14 +182,16 @@
 <blockquote>
 <p>Wireshark 支持 Kafka 协议说明：<a href="https://www.wireshark.org/docs/dfref/k/kafka.html" target="_blank" rel="noopener noreffer ">https://www.wireshark.org/docs/dfref/k/kafka.html</a></p>
 </blockquote>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="./tcpdump_producer_ip_01.png"
-        data-srcset="./tcpdump_producer_ip_01.png, ./tcpdump_producer_ip_01.png 1.5x, ./tcpdump_producer_ip_01.png 2x"
-        data-sizes="auto"
-        alt="./tcpdump_producer_ip_01.png"
-        title="image" /></p>
+<p><figure><a class="lightgallery" href="./tcpdump_producer_ip_01.png" title="tcpdump_producer_ip_01" data-thumbnail="./tcpdump_producer_ip_01.png" data-sub-html="<h2>tcpdump_producer_ip_01</h2><p>tcpdump_producer_ip_01</p>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="./tcpdump_producer_ip_01.png"
+            data-srcset="./tcpdump_producer_ip_01.png, ./tcpdump_producer_ip_01.png 1.5x, ./tcpdump_producer_ip_01.png 2x"
+            data-sizes="auto"
+            alt="./tcpdump_producer_ip_01.png" />
+    </a><figcaption class="image-caption">tcpdump_producer_ip_01</figcaption>
+    </figure></p>
 </li>
 <li>
 <p>了解 Kafka 协议标准：<a href="https://kafka.apache.org/0101/protocol.html" target="_blank" rel="noopener noreffer ">https://kafka.apache.org/0101/protocol.html</a></p>
@@ -199,14 +201,16 @@
 <ol>
 <li>
 <p>加载数据包文件</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="./tcpdump_producer_ip_02.png"
-        data-srcset="./tcpdump_producer_ip_02.png, ./tcpdump_producer_ip_02.png 1.5x, ./tcpdump_producer_ip_02.png 2x"
-        data-sizes="auto"
-        alt="./tcpdump_producer_ip_02.png"
-        title="image" /></p>
+<p><figure><a class="lightgallery" href="./tcpdump_producer_ip_02.png" title="tcpdump_producer_ip_02" data-thumbnail="./tcpdump_producer_ip_02.png" data-sub-html="<h2>tcpdump_producer_ip_02</h2><p>tcpdump_producer_ip_02</p>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="./tcpdump_producer_ip_02.png"
+            data-srcset="./tcpdump_producer_ip_02.png, ./tcpdump_producer_ip_02.png 1.5x, ./tcpdump_producer_ip_02.png 2x"
+            data-sizes="auto"
+            alt="./tcpdump_producer_ip_02.png" />
+    </a><figcaption class="image-caption">tcpdump_producer_ip_02</figcaption>
+    </figure></p>
 </li>
 <li>
 <p>填写过滤表达式，获取指定数据包</p>
@@ -225,14 +229,16 @@
 </div><blockquote>
 <p>kafka.api_key 参考 Kafka 协议标准 <a href="https://kafka.apache.org/0101/protocol.html#protocol_api_keys" target="_blank" rel="noopener noreffer ">Api Keys</a> 说明</p>
 </blockquote>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="./tcpdump_producer_ip_03.png"
-        data-srcset="./tcpdump_producer_ip_03.png, ./tcpdump_producer_ip_03.png 1.5x, ./tcpdump_producer_ip_03.png 2x"
-        data-sizes="auto"
-        alt="./tcpdump_producer_ip_03.png"
-        title="image" /></p>
+<p><figure><a class="lightgallery" href="./tcpdump_producer_ip_03.png" title="tcpdump_producer_ip_03" data-thumbnail="./tcpdump_producer_ip_03.png" data-sub-html="<h2>tcpdump_producer_ip_03</h2><p>tcpdump_producer_ip_03</p>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="./tcpdump_producer_ip_03.png"
+            data-srcset="./tcpdump_producer_ip_03.png, ./tcpdump_producer_ip_03.png 1.5x, ./tcpdump_producer_ip_03.png 2x"
+            data-sizes="auto"
+            alt="./tcpdump_producer_ip_03.png" />
+    </a><figcaption class="image-caption">tcpdump_producer_ip_03</figcaption>
+    </figure></p>
 <p>从中可以得知如下信息：</p>
 <ul>
 <li>生产端IP</li>
@@ -240,36 +246,42 @@
 <li>请求类型</li>
 <li>客户端端口</li>
 </ul>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="./tcpdump_producer_ip_04.png"
-        data-srcset="./tcpdump_producer_ip_04.png, ./tcpdump_producer_ip_04.png 1.5x, ./tcpdump_producer_ip_04.png 2x"
-        data-sizes="auto"
-        alt="./tcpdump_producer_ip_04.png"
-        title="image" /></p>
+<p><figure><a class="lightgallery" href="./tcpdump_producer_ip_04.png" title="tcpdump_producer_ip_04" data-thumbnail="./tcpdump_producer_ip_04.png" data-sub-html="<h2>tcpdump_producer_ip_04</h2><p>tcpdump_producer_ip_04</p>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="./tcpdump_producer_ip_04.png"
+            data-srcset="./tcpdump_producer_ip_04.png, ./tcpdump_producer_ip_04.png 1.5x, ./tcpdump_producer_ip_04.png 2x"
+            data-sizes="auto"
+            alt="./tcpdump_producer_ip_04.png" />
+    </a><figcaption class="image-caption">tcpdump_producer_ip_04</figcaption>
+    </figure></p>
 <p>同时，可以查看 Kafka 数据包具体信息。</p>
 </li>
 <li>
 <p>统计客户端所有 IP 地址</p>
 <p>打开统计页面：<code>统计 -&gt; IPv4 Statistics -&gt; All Addresses</code></p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="./tcpdump_producer_ip_05.png"
-        data-srcset="./tcpdump_producer_ip_05.png, ./tcpdump_producer_ip_05.png 1.5x, ./tcpdump_producer_ip_05.png 2x"
-        data-sizes="auto"
-        alt="./tcpdump_producer_ip_05.png"
-        title="image" /></p>
+<p><figure><a class="lightgallery" href="./tcpdump_producer_ip_05.png" title="tcpdump_producer_ip_05" data-thumbnail="./tcpdump_producer_ip_05.png" data-sub-html="<h2>tcpdump_producer_ip_05</h2><p>tcpdump_producer_ip_05</p>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="./tcpdump_producer_ip_05.png"
+            data-srcset="./tcpdump_producer_ip_05.png, ./tcpdump_producer_ip_05.png 1.5x, ./tcpdump_producer_ip_05.png 2x"
+            data-sizes="auto"
+            alt="./tcpdump_producer_ip_05.png" />
+    </a><figcaption class="image-caption">tcpdump_producer_ip_05</figcaption>
+    </figure></p>
 <p>填写过滤规则，获取客户端IP（注意去掉本机IP）：</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="./tcpdump_producer_ip_06.png"
-        data-srcset="./tcpdump_producer_ip_06.png, ./tcpdump_producer_ip_06.png 1.5x, ./tcpdump_producer_ip_06.png 2x"
-        data-sizes="auto"
-        alt="./tcpdump_producer_ip_06.png"
-        title="image" /></p>
+<p><figure><a class="lightgallery" href="./tcpdump_producer_ip_06.png" title="tcpdump_producer_ip_06" data-thumbnail="./tcpdump_producer_ip_06.png" data-sub-html="<h2>tcpdump_producer_ip_06</h2><p>tcpdump_producer_ip_06</p>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="./tcpdump_producer_ip_06.png"
+            data-srcset="./tcpdump_producer_ip_06.png, ./tcpdump_producer_ip_06.png 1.5x, ./tcpdump_producer_ip_06.png 2x"
+            data-sizes="auto"
+            alt="./tcpdump_producer_ip_06.png" />
+    </a><figcaption class="image-caption">tcpdump_producer_ip_06</figcaption>
+    </figure></p>
 <p>最终可确认生产者IP地址为： <code>10.9.78.181</code></p>
 </li>
 </ol>
@@ -311,7 +323,7 @@
             </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
                 <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
             </a>
-        </div><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":150},"comment":{},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":30,"type":"lunr"}};</script><script type="text/javascript" src="/js/theme.min.js"></script><script type="text/javascript">
+        </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/css/lightgallery-bundle.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/lightgallery.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":150},"comment":{},"lightgallery":true,"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":30,"type":"lunr"}};</script><script type="text/javascript" src="/js/theme.min.js"></script><script type="text/javascript">
             window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());
             gtag('config', 'G-ZMK8SVQ014', { 'anonymize_ip': true });
         </script><script type="text/javascript" src="https://www.googletagmanager.com/gtag/js?id=G-ZMK8SVQ014" async></script></body>

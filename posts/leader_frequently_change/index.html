@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://www.benzimu.com/posts/leader_frequently_change/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2024-08-03T20:04:10+08:00" />
-<meta property="article:modified_time" content="2024-08-20T14:54:57+08:00" /><meta property="og:site_name" content="BenZimu&#39;s Blog" />
+<meta property="article:modified_time" content="2024-08-20T15:07:46+08:00" /><meta property="og:site_name" content="BenZimu&#39;s Blog" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="etcd leader 频繁切换"/>
@@ -28,8 +28,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/www.benzimu.com\/posts\/leader_frequently_change\/"
-        },"genre": "posts","keywords": "etcd, leader","wordcount":  2357 ,
-        "url": "https:\/\/www.benzimu.com\/posts\/leader_frequently_change\/","datePublished": "2024-08-03T20:04:10+08:00","dateModified": "2024-08-20T14:54:57+08:00","publisher": {
+        },"genre": "posts","keywords": "etcd, leader","wordcount":  2358 ,
+        "url": "https:\/\/www.benzimu.com\/posts\/leader_frequently_change\/","datePublished": "2024-08-03T20:04:10+08:00","dateModified": "2024-08-20T15:07:46+08:00","publisher": {
             "@type": "Organization",
             "name": ""},"author": {
                 "@type": "Person",
@@ -102,7 +102,7 @@
             <div class="toc-content always-active" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">etcd leader 频繁切换</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="https://www.benzimu.com/" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>BenZimu</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/etcd/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>etcd</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2024-08-03">2024-08-03</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 2357 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2024-08-03">2024-08-03</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 2358 字&nbsp;
                 <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 5 分钟&nbsp;</div>
         </div><div class="featured-image"><img
         class="lazyload"
@@ -208,14 +208,16 @@
 <h4 id="查看虚拟机监控">查看虚拟机监控</h4>
 <p>etcd leader 异常切换期间，虚拟机 CPU、内存使用率均在正常范围内。并且 IOPS、吞吐量、await延时等监控也均在有效范围内，所以暂时无法确定是否与 Ceph 共享存储性能问题。</p>
 <p>但磁盘监控中存在一个异常指标，disk.io.msec_write（所有写入操作所花费的总时间）：</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="./leader_frequently_change_03.png"
-        data-srcset="./leader_frequently_change_03.png, ./leader_frequently_change_03.png 1.5x, ./leader_frequently_change_03.png 2x"
-        data-sizes="auto"
-        alt="./leader_frequently_change_03.png"
-        title="image" /></p>
+<p><figure><a class="lightgallery" href="./leader_frequently_change_03.png" title="leader_frequently_change_03" data-thumbnail="./leader_frequently_change_03.png" data-sub-html="<h2>leader_frequently_change_03</h2><p>leader_frequently_change_03</p>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="./leader_frequently_change_03.png"
+            data-srcset="./leader_frequently_change_03.png, ./leader_frequently_change_03.png 1.5x, ./leader_frequently_change_03.png 2x"
+            data-sizes="auto"
+            alt="./leader_frequently_change_03.png" />
+    </a><figcaption class="image-caption">leader_frequently_change_03</figcaption>
+    </figure></p>
 <p>从监控看该指标最高达到60s，且每次峰值均能与 etcd <code>slow fdatasync</code> 日志时间吻合，可确认 etcd 频繁 leader changed 与磁盘性能有关。</p>
 <h3 id="问题确认">问题确认</h3>
 <p>etcd leader 每 100ms 向 follower 发送心跳，维持 leader 地位。由于磁盘性能不足，导致 etcd fdatasync 较慢，超过 etcd follower 选举超时时间（election timeout，默认 1000ms，约10个心跳间隔），从而 etcd 其他 follower 节点开始新一轮 leader 选举，这就是 etcd 服务日志中看到的频繁 Leader changed 的原因。</p>
@@ -275,7 +277,7 @@
             </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
                 <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
             </a>
-        </div><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":150},"comment":{},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":30,"type":"lunr"}};</script><script type="text/javascript" src="/js/theme.min.js"></script><script type="text/javascript">
+        </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/css/lightgallery-bundle.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/lightgallery.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":150},"comment":{},"lightgallery":true,"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":30,"type":"lunr"}};</script><script type="text/javascript" src="/js/theme.min.js"></script><script type="text/javascript">
             window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());
             gtag('config', 'G-ZMK8SVQ014', { 'anonymize_ip': true });
         </script><script type="text/javascript" src="https://www.googletagmanager.com/gtag/js?id=G-ZMK8SVQ014" async></script></body>

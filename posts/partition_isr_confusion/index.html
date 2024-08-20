@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://www.benzimu.com/posts/partition_isr_confusion/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2024-02-25T20:30:10+08:00" />
-<meta property="article:modified_time" content="2024-07-30T22:59:29+08:00" /><meta property="og:site_name" content="BenZimu&#39;s Blog" />
+<meta property="article:modified_time" content="2024-08-20T15:07:46+08:00" /><meta property="og:site_name" content="BenZimu&#39;s Blog" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Topic partition ISR 混乱，为 AR 超集"/>
@@ -28,8 +28,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/www.benzimu.com\/posts\/partition_isr_confusion\/"
-        },"genre": "posts","keywords": "Kafka, ISR, AR","wordcount":  282 ,
-        "url": "https:\/\/www.benzimu.com\/posts\/partition_isr_confusion\/","datePublished": "2024-02-25T20:30:10+08:00","dateModified": "2024-07-30T22:59:29+08:00","publisher": {
+        },"genre": "posts","keywords": "Kafka, ISR, AR","wordcount":  285 ,
+        "url": "https:\/\/www.benzimu.com\/posts\/partition_isr_confusion\/","datePublished": "2024-02-25T20:30:10+08:00","dateModified": "2024-08-20T15:07:46+08:00","publisher": {
             "@type": "Organization",
             "name": ""},"author": {
                 "@type": "Person",
@@ -102,7 +102,7 @@
             <div class="toc-content always-active" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Topic partition ISR 混乱，为 AR 超集</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="https://www.benzimu.com/" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>BenZimu</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kafka/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Kafka</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2024-02-25">2024-02-25</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 282 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2024-02-25">2024-02-25</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 285 字&nbsp;
                 <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 1 分钟&nbsp;</div>
         </div><div class="featured-image"><img
         class="lazyload"
@@ -147,37 +147,43 @@
 </span></span><span class="line"><span class="cl">org.apache.kafka.common.errors.NotLeaderOrFollowerException: Replica with id 2 is not available on broker 1
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="./partition_isr_confusion_01.png"
-        data-srcset="./partition_isr_confusion_01.png, ./partition_isr_confusion_01.png 1.5x, ./partition_isr_confusion_01.png 2x"
-        data-sizes="auto"
-        alt="./partition_isr_confusion_01.png"
-        title="image" /></p>
+</div><p><figure><a class="lightgallery" href="./partition_isr_confusion_01.png" title="partition_isr_confusion_01" data-thumbnail="./partition_isr_confusion_01.png" data-sub-html="<h2>partition_isr_confusion_01</h2><p>partition_isr_confusion_01</p>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="./partition_isr_confusion_01.png"
+            data-srcset="./partition_isr_confusion_01.png, ./partition_isr_confusion_01.png 1.5x, ./partition_isr_confusion_01.png 2x"
+            data-sizes="auto"
+            alt="./partition_isr_confusion_01.png" />
+    </a><figcaption class="image-caption">partition_isr_confusion_01</figcaption>
+    </figure></p>
 <p>该错误信息与官方 issue <a href="https://issues.apache.org/jira/browse/KAFKA-9672" target="_blank" rel="noopener noreffer ">KAFKA-9672</a> 类似，均是由于 Broker 节点异常下线导致。</p>
 <h4 id="查看-topic-详情">查看 Topic 详情</h4>
 <p>此时出现部分 Topic 分区 ISR 混乱情况，即 ISR 副本集与 AR 副本集不一致，现象显示 ISR 为 AR 超集，与实际情况相悖。如图所示：</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="./partition_isr_confusion_02.png"
-        data-srcset="./partition_isr_confusion_02.png, ./partition_isr_confusion_02.png 1.5x, ./partition_isr_confusion_02.png 2x"
-        data-sizes="auto"
-        alt="./partition_isr_confusion_02.png"
-        title="image" /></p>
+<p><figure><a class="lightgallery" href="./partition_isr_confusion_02.png" title="partition_isr_confusion_02" data-thumbnail="./partition_isr_confusion_02.png" data-sub-html="<h2>partition_isr_confusion_02</h2><p>partition_isr_confusion_02</p>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="./partition_isr_confusion_02.png"
+            data-srcset="./partition_isr_confusion_02.png, ./partition_isr_confusion_02.png 1.5x, ./partition_isr_confusion_02.png 2x"
+            data-sizes="auto"
+            alt="./partition_isr_confusion_02.png" />
+    </a><figcaption class="image-caption">partition_isr_confusion_02</figcaption>
+    </figure></p>
 <h3 id="解决方案">解决方案</h3>
 <ol>
 <li>
 <p>直接修改 ZooKeeper 中 Topic 分区 ISR 信息，如图：</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="./partition_isr_confusion_03.png"
-        data-srcset="./partition_isr_confusion_03.png, ./partition_isr_confusion_03.png 1.5x, ./partition_isr_confusion_03.png 2x"
-        data-sizes="auto"
-        alt="./partition_isr_confusion_03.png"
-        title="image" /></p>
+<p><figure><a class="lightgallery" href="./partition_isr_confusion_03.png" title="partition_isr_confusion_03" data-thumbnail="./partition_isr_confusion_03.png" data-sub-html="<h2>partition_isr_confusion_03</h2><p>partition_isr_confusion_03</p>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="./partition_isr_confusion_03.png"
+            data-srcset="./partition_isr_confusion_03.png, ./partition_isr_confusion_03.png 1.5x, ./partition_isr_confusion_03.png 2x"
+            data-sizes="auto"
+            alt="./partition_isr_confusion_03.png" />
+    </a><figcaption class="image-caption">partition_isr_confusion_03</figcaption>
+    </figure></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -209,7 +215,7 @@
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2024-07-30</span>
+                <span>更新于 2024-08-20</span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
@@ -243,7 +249,7 @@
             </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
                 <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
             </a>
-        </div><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":150},"comment":{},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":30,"type":"lunr"}};</script><script type="text/javascript" src="/js/theme.min.js"></script><script type="text/javascript">
+        </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/css/lightgallery-bundle.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/lightgallery.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":150},"comment":{},"lightgallery":true,"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":30,"type":"lunr"}};</script><script type="text/javascript" src="/js/theme.min.js"></script><script type="text/javascript">
             window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());
             gtag('config', 'G-ZMK8SVQ014', { 'anonymize_ip': true });
         </script><script type="text/javascript" src="https://www.googletagmanager.com/gtag/js?id=G-ZMK8SVQ014" async></script></body>

@@ -28,7 +28,7 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/www.benzimu.com\/posts\/tornado_platform_posix\/"
-        },"genre": "posts","keywords": "Tornado","wordcount":  1556 ,
+        },"genre": "posts","keywords": "Tornado","wordcount":  1557 ,
         "url": "https:\/\/www.benzimu.com\/posts\/tornado_platform_posix\/","datePublished": "2017-09-01T08:00:00+08:00","dateModified": "2022-10-16T20:31:56+08:00","publisher": {
             "@type": "Organization",
             "name": ""},"author": {
@@ -102,7 +102,7 @@
             <div class="toc-content always-active" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">tornado posix 实现解析</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="https://www.benzimu.com/" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>BenZimu</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/tornado-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Tornado 源码解析</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2017-09-01">2017-09-01</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 1556 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2017-09-01">2017-09-01</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 1557 字&nbsp;
                 <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 4 分钟&nbsp;</div>
         </div><div class="featured-image"><img
         class="lazyload"
@@ -130,14 +130,16 @@
 <p>tornado.platform.posix，Posix 平台特定功能的实现。Posix 平台指“可移植操作系统接口”（Portable Operation System Interface），最后的 x 代表类 Unix 系统。该文件主要是对 Linux 系统相关 API 的实现，Windows NT 系列实现为 tornado.platform.windows、tornado.platform.common。</p>
 <h3 id="close-on-exec-标志详解">close-on-exec 标志详解</h3>
 <p>当我们 fork 子进程时，子进程以写时复制（COW，Copy-On-Write）方式获得父进程的数据空间、堆和栈副本，这其中也包括文件描述符。刚刚 fork 成功时，父子进程中相同的文件描述符指向系统文件表中的同一项（这也意味着他们共享同一文件偏移量）。</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="/posts/tornado_platform_posix/fork.gif"
-        data-srcset="/posts/tornado_platform_posix/fork.gif, /posts/tornado_platform_posix/fork.gif 1.5x, /posts/tornado_platform_posix/fork.gif 2x"
-        data-sizes="auto"
-        alt="/posts/tornado_platform_posix/fork.gif"
-        title="fork" width="483" height="576" /></p>
+<p><figure><a class="lightgallery" href="/posts/tornado_platform_posix/fork.gif" title="fork" data-thumbnail="/posts/tornado_platform_posix/fork.gif" data-sub-html="<h2>fork</h2><p>fork</p>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/posts/tornado_platform_posix/fork.gif"
+            data-srcset="/posts/tornado_platform_posix/fork.gif, /posts/tornado_platform_posix/fork.gif 1.5x, /posts/tornado_platform_posix/fork.gif 2x"
+            data-sizes="auto"
+            alt="/posts/tornado_platform_posix/fork.gif" width="483" height="576" />
+    </a><figcaption class="image-caption">fork</figcaption>
+    </figure></p>
 <p>接着，在子进程中我们会 exec 另一个程序，此时会用全新的程序替换子进程的正文，数据，堆和栈等。此时保存文件描述符的变量当然也不存在了，我们就无法关闭无用的文件描述符了。所以通常我们会 fork 子进程后在子进程中直接执行 close 关掉无用的文件描述符，然后再执行 exec。</p>
 <p>但是在复杂系统中，有时我们 fork 子进程时已经不知道打开了多少个文件描述符（包括 socket 句柄等），这此时进行逐一清理确实有很大难度。我们期望的是能在 fork 子进程前打开某个文件句柄时就指定好：“这个句柄我在 fork 子进程后执行 exec 时就关闭”。其实是有这样的方法的：即所谓的 close-on-exec。设置 close-on-exec 为 FD_CLOEXEC，即 1（系统默认为 0），这样，当 fork 子进程后，仍然可以使用 fd。但执行 exec 后系统就会字段关闭子进程中的 fd 了，即不能再在该文件中读写数据了。</p>
 <h3 id="tornadoplatformposix">tornado.platform.posix</h3>
@@ -295,7 +297,7 @@
             </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
                 <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
             </a>
-        </div><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":150},"comment":{},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":30,"type":"lunr"}};</script><script type="text/javascript" src="/js/theme.min.js"></script><script type="text/javascript">
+        </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/css/lightgallery-bundle.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/lightgallery.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":150},"comment":{},"lightgallery":true,"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":30,"type":"lunr"}};</script><script type="text/javascript" src="/js/theme.min.js"></script><script type="text/javascript">
             window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());
             gtag('config', 'G-ZMK8SVQ014', { 'anonymize_ip': true });
         </script><script type="text/javascript" src="https://www.googletagmanager.com/gtag/js?id=G-ZMK8SVQ014" async></script></body>
