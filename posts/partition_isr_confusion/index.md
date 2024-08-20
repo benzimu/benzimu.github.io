@@ -9,20 +9,22 @@
 
 ### 问题排查
 
-* 查看 Broker 日志，有如下报错：
+#### 查看 Broker 日志
 
-    ```Text
-    Uncaught exception in scheduled task 'isr-expiration'
-    org.apache.kafka.common.errors.NotLeaderOrFollowerException: Replica with id 2 is not available on broker 1
-    ```
+```Text
+Uncaught exception in scheduled task 'isr-expiration'
+org.apache.kafka.common.errors.NotLeaderOrFollowerException: Replica with id 2 is not available on broker 1
+```
 
-    ![image](./partition_isr_confusion_01.png)
+![image](./partition_isr_confusion_01.png)
 
-    该错误信息与官方 issue [KAFKA-9672](https://issues.apache.org/jira/browse/KAFKA-9672) 类似，均是由于 Broker 节点异常下线导致。
+该错误信息与官方 issue [KAFKA-9672](https://issues.apache.org/jira/browse/KAFKA-9672) 类似，均是由于 Broker 节点异常下线导致。
 
-* 查看 Topic 详情，此时出现部分 Topic 分区 ISR 混乱情况，即 ISR 副本集与 AR 副本集不一致，现象显示 ISR 为 AR 超集，与实际情况相悖。如图所示：
+#### 查看 Topic 详情
 
-    ![image](./partition_isr_confusion_02.png)
+此时出现部分 Topic 分区 ISR 混乱情况，即 ISR 副本集与 AR 副本集不一致，现象显示 ISR 为 AR 超集，与实际情况相悖。如图所示：
+
+![image](./partition_isr_confusion_02.png)
 
 ### 解决方案
 

@@ -4,7 +4,17 @@
         <link>https://www.benzimu.com/posts/</link>
         <description>所有文章 | BenZimu&#39;s Blog</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>benzimuu@gmail.com (BenZimu)</managingEditor>
-            <webMaster>benzimuu@gmail.com (BenZimu)</webMaster><lastBuildDate>Sun, 25 Feb 2024 20:30:10 &#43;0800</lastBuildDate><atom:link href="https://www.benzimu.com/posts/" rel="self" type="application/rss+xml" /><item>
+            <webMaster>benzimuu@gmail.com (BenZimu)</webMaster><lastBuildDate>Sat, 03 Aug 2024 20:04:10 &#43;0800</lastBuildDate><atom:link href="https://www.benzimu.com/posts/" rel="self" type="application/rss+xml" /><item>
+    <title>etcd leader 频繁切换</title>
+    <link>https://www.benzimu.com/posts/leader_frequently_change/</link>
+    <pubDate>Sat, 03 Aug 2024 20:04:10 &#43;0800</pubDate>
+    <author>BenZimu</author>
+    <guid>https://www.benzimu.com/posts/leader_frequently_change/</guid>
+    <description><![CDATA[<div class="featured-image">
+                <img src="/images/etcd/featured_leader_frequently_change.jpg" referrerpolicy="no-referrer">
+            </div>etcd leader 频繁切换，导致客户端服务异常]]></description>
+</item>
+<item>
     <title>Topic partition ISR 混乱，为 AR 超集</title>
     <link>https://www.benzimu.com/posts/partition_isr_confusion/</link>
     <pubDate>Sun, 25 Feb 2024 20:30:10 &#43;0800</pubDate>
@@ -93,16 +103,6 @@
     <description><![CDATA[<div class="featured-image">
                 <img src="/images/tornado_src_analysis/featured_iostream.jpg" referrerpolicy="no-referrer">
             </div>tornado iostream 封装了对 socket fd 底层数据的读取、写入操作。]]></description>
-</item>
-<item>
-    <title>tornado http1connection 实现解析</title>
-    <link>https://www.benzimu.com/posts/tornado_http1connection/</link>
-    <pubDate>Mon, 06 Nov 2017 09:00:00 &#43;0800</pubDate>
-    <author>BenZimu</author>
-    <guid>https://www.benzimu.com/posts/tornado_http1connection/</guid>
-    <description><![CDATA[<div class="featured-image">
-                <img src="/images/tornado_src_analysis/featured_http1connection.jpg" referrerpolicy="no-referrer">
-            </div>tornado http1connection 解析，主要是对 http 协议进行了封装。]]></description>
 </item>
 </channel>
 </rss>

@@ -1,0 +1,18 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>leader - 标签 - BenZimu&#39;s Blog</title>
+        <link>https://www.benzimu.com/tags/leader/</link>
+        <description>leader - 标签 - BenZimu&#39;s Blog</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>benzimuu@gmail.com (BenZimu)</managingEditor>
+            <webMaster>benzimuu@gmail.com (BenZimu)</webMaster><lastBuildDate>Sat, 03 Aug 2024 20:04:10 &#43;0800</lastBuildDate><atom:link href="https://www.benzimu.com/tags/leader/" rel="self" type="application/rss+xml" /><item>
+    <title>etcd leader 频繁切换</title>
+    <link>https://www.benzimu.com/posts/leader_frequently_change/</link>
+    <pubDate>Sat, 03 Aug 2024 20:04:10 &#43;0800</pubDate>
+    <author>BenZimu</author>
+    <guid>https://www.benzimu.com/posts/leader_frequently_change/</guid>
+    <description><![CDATA[<div class="featured-image">
+                <img src="/images/etcd/featured_leader_frequently_change.jpg" referrerpolicy="no-referrer">
+            </div>etcd leader 频繁切换，导致客户端服务异常]]></description>
+</item>
+</channel>
+</rss>
