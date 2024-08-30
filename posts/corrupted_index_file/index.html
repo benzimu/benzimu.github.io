@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="robots" content="noodp" />
         <title>Kafka 数据索引文件损坏 - BenZimu&#39;s Blog</title><meta name="Description" content="凡事豫则立，不豫则废！-《礼记·中庸》"><meta property="og:title" content="Kafka 数据索引文件损坏" />
-<meta property="og:description" content="Kafka 数据索引文件损坏，服务中断" />
+<meta property="og:description" content="Kafka 数据索引文件损坏，生产消费速度较慢" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://www.benzimu.com/posts/corrupted_index_file/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2023-08-06T19:36:19+08:00" />
@@ -13,7 +13,7 @@
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Kafka 数据索引文件损坏"/>
-<meta name="twitter:description" content="Kafka 数据索引文件损坏，服务中断"/>
+<meta name="twitter:description" content="Kafka 数据索引文件损坏，生产消费速度较慢"/>
 <meta name="application-name" content="BenZimu&#39;s Blog">
 <meta name="apple-mobile-web-app-title" content="BenZimu&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -28,7 +28,7 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/www.benzimu.com\/posts\/corrupted_index_file\/"
-        },"genre": "posts","keywords": "Kafka","wordcount":  1652 ,
+        },"genre": "posts","keywords": "Kafka","wordcount":  1632 ,
         "url": "https:\/\/www.benzimu.com\/posts\/corrupted_index_file\/","datePublished": "2023-08-06T19:36:19+08:00","dateModified": "2024-08-20T19:09:58+08:00","publisher": {
             "@type": "Organization",
             "name": ""},"author": {
@@ -102,7 +102,7 @@
             <div class="toc-content always-active" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Kafka 数据索引文件损坏</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="https://www.benzimu.com/" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>BenZimu</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kafka/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Kafka</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2023-08-06">2023-08-06</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 1652 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2023-08-06">2023-08-06</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 1632 字&nbsp;
                 <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 4 分钟&nbsp;</div>
         </div><div class="featured-image"><img
         class="lazyload"
@@ -118,12 +118,11 @@
                 </div>
                 <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
   <ul>
-    <li><a href="#kafka-数据索引文件损坏服务中断">Kafka 数据索引文件损坏，服务中断</a>
+    <li><a href="#kafka-数据索引文件损坏生产消费速度较慢">Kafka 数据索引文件损坏，生产消费速度较慢</a>
       <ul>
         <li><a href="#背景说明">背景说明</a></li>
         <li><a href="#问题排查">问题排查</a>
           <ul>
-            <li><a href="#客户端日志">客户端日志</a></li>
             <li><a href="#broker-日志">Broker 日志</a></li>
           </ul>
         </li>
@@ -142,21 +141,11 @@
     </li>
   </ul>
 </nav></div>
-            </div><div class="content" id="content"><h2 id="kafka-数据索引文件损坏服务中断">Kafka 数据索引文件损坏，服务中断</h2>
+            </div><div class="content" id="content"><h2 id="kafka-数据索引文件损坏生产消费速度较慢">Kafka 数据索引文件损坏，生产消费速度较慢</h2>
 <h3 id="背景说明">背景说明</h3>
-<p>Kafka 集群版本为 0.10.2.2。监控系统告警，显示 Kafka broker 节点 CPU、内存被打满。同时，客户报障 Kafka 集群生产消费速度受影响。</p>
+<p>Kafka 集群版本为 0.10.2.2。监控系统告警，显示 Kafka broker 节点 CPU、内存被打满。同时，业务报障 Kafka 集群生产消费速度受影响。</p>
 <h3 id="问题排查">问题排查</h3>
-<h4 id="客户端日志">客户端日志</h4>
-<p>生产者日志如下：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">level=error msg=&#34;producer SendMessages Err.&#34; error=&#34;kafka: Failed to deliver 175 messages.&#34;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h4 id="broker-日志">Broker 日志</h4>
+<h4 id="broker-日志">Broker 日志</h4>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1

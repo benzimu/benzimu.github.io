@@ -1,21 +1,13 @@
 # Kafka 数据索引文件损坏
 
 
-## Kafka 数据索引文件损坏，服务中断
+## Kafka 数据索引文件损坏，生产消费速度较慢
 
 ### 背景说明
 
-Kafka 集群版本为 0.10.2.2。监控系统告警，显示 Kafka broker 节点 CPU、内存被打满。同时，客户报障 Kafka 集群生产消费速度受影响。
+Kafka 集群版本为 0.10.2.2。监控系统告警，显示 Kafka broker 节点 CPU、内存被打满。同时，业务报障 Kafka 集群生产消费速度受影响。
 
 ### 问题排查
-
-#### 客户端日志
-
-生产者日志如下：
-
-```txt
-level=error msg="producer SendMessages Err." error="kafka: Failed to deliver 175 messages."
-```
 
 #### Broker 日志
 
