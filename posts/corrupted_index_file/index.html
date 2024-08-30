@@ -5,15 +5,15 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="robots" content="noodp" />
         <title>Kafka 数据索引文件损坏 - BenZimu&#39;s Blog</title><meta name="Description" content="凡事豫则立，不豫则废！-《礼记·中庸》"><meta property="og:title" content="Kafka 数据索引文件损坏" />
-<meta property="og:description" content="Kafka 数据索引文件损坏，生产消费速度较慢" />
+<meta property="og:description" content="Kafka 数据索引文件损坏" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://www.benzimu.com/posts/corrupted_index_file/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2023-08-06T19:36:19+08:00" />
-<meta property="article:modified_time" content="2024-08-20T19:09:58+08:00" /><meta property="og:site_name" content="BenZimu&#39;s Blog" />
+<meta property="article:modified_time" content="2024-08-30T11:25:30+08:00" /><meta property="og:site_name" content="BenZimu&#39;s Blog" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Kafka 数据索引文件损坏"/>
-<meta name="twitter:description" content="Kafka 数据索引文件损坏，生产消费速度较慢"/>
+<meta name="twitter:description" content="Kafka 数据索引文件损坏"/>
 <meta name="application-name" content="BenZimu&#39;s Blog">
 <meta name="apple-mobile-web-app-title" content="BenZimu&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -28,8 +28,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/www.benzimu.com\/posts\/corrupted_index_file\/"
-        },"genre": "posts","keywords": "Kafka","wordcount":  1632 ,
-        "url": "https:\/\/www.benzimu.com\/posts\/corrupted_index_file\/","datePublished": "2023-08-06T19:36:19+08:00","dateModified": "2024-08-20T19:09:58+08:00","publisher": {
+        },"genre": "posts","keywords": "Kafka","wordcount":  2359 ,
+        "url": "https:\/\/www.benzimu.com\/posts\/corrupted_index_file\/","datePublished": "2023-08-06T19:36:19+08:00","dateModified": "2024-08-30T11:25:30+08:00","publisher": {
             "@type": "Organization",
             "name": ""},"author": {
                 "@type": "Person",
@@ -102,8 +102,8 @@
             <div class="toc-content always-active" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Kafka 数据索引文件损坏</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="https://www.benzimu.com/" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>BenZimu</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kafka/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Kafka</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2023-08-06">2023-08-06</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 1632 字&nbsp;
-                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 4 分钟&nbsp;</div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2023-08-06">2023-08-06</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 2359 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 5 分钟&nbsp;</div>
         </div><div class="featured-image"><img
         class="lazyload"
         src="/svg/loading.min.svg"
@@ -118,7 +118,7 @@
                 </div>
                 <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
   <ul>
-    <li><a href="#kafka-数据索引文件损坏生产消费速度较慢">Kafka 数据索引文件损坏，生产消费速度较慢</a>
+    <li><a href="#kafka-数据索引文件损坏">Kafka 数据索引文件损坏</a>
       <ul>
         <li><a href="#背景说明">背景说明</a></li>
         <li><a href="#问题排查">问题排查</a>
@@ -129,19 +129,25 @@
         <li><a href="#解决方案">解决方案</a></li>
         <li><a href="#原理分析">原理分析</a>
           <ul>
-            <li><a href="#索引文件为什么会损坏">索引文件为什么会损坏？</a></li>
+            <li><a href="#索引文件为什么会损坏">索引文件为什么会损坏？</a>
+              <ul>
+                <li><a href="#索引文件格式">索引文件格式</a></li>
+                <li><a href="#索引文件损坏原因">索引文件损坏原因</a></li>
+              </ul>
+            </li>
             <li><a href="#索引文件重建进度怎么确定">索引文件重建进度怎么确定？</a>
               <ul>
                 <li><a href="#查看索引文件重建进度">查看索引文件重建进度</a></li>
               </ul>
             </li>
+            <li><a href="#kafka-优雅退出">Kafka 优雅退出</a></li>
           </ul>
         </li>
       </ul>
     </li>
   </ul>
 </nav></div>
-            </div><div class="content" id="content"><h2 id="kafka-数据索引文件损坏生产消费速度较慢">Kafka 数据索引文件损坏，生产消费速度较慢</h2>
+            </div><div class="content" id="content"><h2 id="kafka-数据索引文件损坏">Kafka 数据索引文件损坏</h2>
 <h3 id="背景说明">背景说明</h3>
 <p>Kafka 集群版本为 0.10.2.2。监控系统告警，显示 Kafka broker 节点 CPU、内存被打满。同时，业务报障 Kafka 集群生产消费速度受影响。</p>
 <h3 id="问题排查">问题排查</h3>
@@ -165,7 +171,34 @@
 <p>从 Kafka broker 日志可以看到，索引文件正在重建（rebuilding index&hellip;），只需等着索引文件自动重建完成，服务即可恢复正常。</p>
 <h3 id="原理分析">原理分析</h3>
 <h4 id="索引文件为什么会损坏">索引文件为什么会损坏？</h4>
-<p>Kafka 服务启动后，会校验索引文件的完整性。报错的源码如下：</p>
+<h5 id="索引文件格式">索引文件格式</h5>
+<p><figure><a class="lightgallery" href="./corrupted_index_file_02.png" title="corrupted_index_file_02" data-thumbnail="./corrupted_index_file_02.png" data-sub-html="<h2>corrupted_index_file_02</h2><p>corrupted_index_file_02</p>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="./corrupted_index_file_02.png"
+            data-srcset="./corrupted_index_file_02.png, ./corrupted_index_file_02.png 1.5x, ./corrupted_index_file_02.png 2x"
+            data-sizes="auto"
+            alt="./corrupted_index_file_02.png" />
+    </a><figcaption class="image-caption">corrupted_index_file_02</figcaption>
+    </figure></p>
+<ul>
+<li>relativeOffset: 相对偏移量，表示消息相对于 baseOffset 的偏移量，占用 4 个字节（relativeOffset = offset - baseOffset），当前索引文件的文件名即为 baseOffset 的值。使用相对偏移量可以节省非常多的磁盘空间。如：一个 LogSegment 的 baseOffset 为 67，那么其文件名就是 00000000000000000067.log，offset=111 的消息在索引文件中的 relativeOffset 的值为 111-67=44。</li>
+<li>position: 物理地址，也就是消息在日志分段文件中对应的物理位置，占用 4 个字节。</li>
+</ul>
+<p>索引文件与数据文件对应关系物理结构如下：</p>
+<p><figure><a class="lightgallery" href="./corrupted_index_file_03.png" title="corrupted_index_file_03" data-thumbnail="./corrupted_index_file_03.png" data-sub-html="<h2>corrupted_index_file_03</h2><p>corrupted_index_file_03</p>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="./corrupted_index_file_03.png"
+            data-srcset="./corrupted_index_file_03.png, ./corrupted_index_file_03.png 1.5x, ./corrupted_index_file_03.png 2x"
+            data-sizes="auto"
+            alt="./corrupted_index_file_03.png" />
+    </a><figcaption class="image-caption">corrupted_index_file_03</figcaption>
+    </figure></p>
+<h5 id="索引文件损坏原因">索引文件损坏原因</h5>
+<p>Kafka 服务启动后，会校验索引文件的完整性。报错地方的源码（kafka/log/OffsetIndex.scala）如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -245,7 +278,7 @@
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>从日志中可以看到，_lastOffset 与 baseOffset 一致，且都跟文件名相同。说明索引文件为空，导致最后一条索引偏移量不大于基础偏移量，从而报错。</p>
-<p>索引文件使用 mmap 技术提升读写性能，数据不会立即写入磁盘，需要等待操作系统定时刷盘。所以在 Kafka 进程异常退出场景下（kill -9 或宕机），数据可能并未完整写入磁盘文件，文件末尾可能会有一些不合法的数据，或者数据完全未写入磁盘，导致索引文件为空。</p>
+<p>索引文件使用 mmap、日志文件使用 Page Cache 技术提升读写性能，数据不会立即写入磁盘，依赖操作系统定时刷盘机制。所以在 Kafka 进程异常退出场景下（kill -9 或宕机），数据可能并未完整写入磁盘文件，文件末尾可能会有一些不合法的数据，或者数据完全未写入磁盘，导致索引文件为空。</p>
 <h4 id="索引文件重建进度怎么确定">索引文件重建进度怎么确定？</h4>
 <p><figure><a class="lightgallery" href="./corrupted_index_file_01.png" title="corrupted_index_file_01" data-thumbnail="./corrupted_index_file_01.png" data-sub-html="<h2>corrupted_index_file_01</h2><p>corrupted_index_file_01</p>">
         <img
@@ -307,11 +340,38 @@
 </div></li>
 </ol>
 <p>通过步骤 3 与步骤 1 数据结果进行比对，即可知道索引文件重建进度。同时，通过第 2 步查到的时间与当前时间比对，即可知道花费的时间，从而推断出剩余所需时间。</p>
+<h4 id="kafka-优雅退出">Kafka 优雅退出</h4>
+<p>要触发优雅关闭，需要向进程发送终止信号（例如类 Unix 系统中的 SIGTERM）。在 Kafka 脚本 kafka-server-stop.sh 中，停止 Kafka 进程使用如下脚本：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="nv">PIDS</span><span class="o">=</span><span class="k">$(</span>ps ax <span class="p">|</span> grep -i <span class="s1">&#39;kafka\.Kafka&#39;</span> <span class="p">|</span> grep java <span class="p">|</span> grep -v grep <span class="p">|</span> awk <span class="s1">&#39;{print $1}&#39;</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[</span> -z <span class="s2">&#34;</span><span class="nv">$PIDS</span><span class="s2">&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">echo</span> <span class="s2">&#34;No kafka server to stop&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">exit</span> <span class="m">1</span>
+</span></span><span class="line"><span class="cl"><span class="k">else</span> 
+</span></span><span class="line"><span class="cl">  <span class="nb">kill</span> -s TERM <span class="nv">$PIDS</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>kill -s TERM</code> 即向 Kafka 进程发送一个 SIGTERM 信号。导致未优雅退出的场景一般为：机器异常关闭、OOM Killer、或手动执行 kill -9 等。同时，如果使用 systemd 管理 Kafka 进程，也有可能无法优雅退出。因为 systemd 允许进程优雅停止的默认超时时间为 90 秒，如果超时后进程还没有停止，它会使用 SIGKILL 强制终止进程。</p>
+<p>Kafka 优雅关闭后，会在 ${log.dirs} 目录中生成 .kafka_cleanshutDown 文件，Kafka 在启动的时候，会检查是否存在该文件，从而判断是否要执行 recover log 操作。</p>
+<p>优雅关闭时 Kafka 会将所有日志同步到磁盘，以避免在重新启动时需要进行任何日志恢复（即验证日志尾部所有消息的校验和）。日志恢复需要时间，因此这会加快有意重新启动的速度。同时，会将该 Broker 作为 leader 的所有分区 leader 迁移到其他副本，这将使 leader 转移更快，并将每个分区不可用的时间最小化到几毫秒。Kafka 官网对 Graceful shutdown 说明：<a href="https://kafka.apache.org/documentation/#basic_ops_restarting" target="_blank" rel="noopener noreffer ">Graceful shutdown</a>。</p>
 </div><div class="post-footer" id="post-footer">
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2024-08-20</span>
+                <span>更新于 2024-08-30</span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>

@@ -34,7 +34,7 @@
     <guid>https://www.benzimu.com/posts/corrupted_index_file/</guid>
     <description><![CDATA[<div class="featured-image">
                 <img src="/images/kafka/featured_corrupted_index_file.jpg" referrerpolicy="no-referrer">
-            </div>Kafka 数据索引文件损坏，生产消费速度较慢]]></description>
+            </div>Kafka 数据索引文件损坏]]></description>
 </item>
 <item>
     <title>Tcpdump &#43; Wireshark 分析 Kafka 数据包</title>

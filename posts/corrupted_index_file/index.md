@@ -1,7 +1,7 @@
 # Kafka 数据索引文件损坏
 
 
-## Kafka 数据索引文件损坏，生产消费速度较慢
+## Kafka 数据索引文件损坏
 
 ### 背景说明
 
@@ -28,7 +28,20 @@ INFO Completed load of log monitor-2 with 1 log segments and log end offset 3111
 
 #### 索引文件为什么会损坏？
 
-Kafka 服务启动后，会校验索引文件的完整性。报错的源码如下：
+##### 索引文件格式
+
+![corrupted_index_file_02](./corrupted_index_file_02.png "corrupted_index_file_02")
+
+- relativeOffset: 相对偏移量，表示消息相对于 baseOffset 的偏移量，占用 4 个字节（relativeOffset = offset - baseOffset），当前索引文件的文件名即为 baseOffset 的值。使用相对偏移量可以节省非常多的磁盘空间。如：一个 LogSegment 的 baseOffset 为 67，那么其文件名就是 00000000000000000067.log，offset=111 的消息在索引文件中的 relativeOffset 的值为 111-67=44。
+- position: 物理地址，也就是消息在日志分段文件中对应的物理位置，占用 4 个字节。
+
+索引文件与数据文件对应关系物理结构如下：
+
+![corrupted_index_file_03](./corrupted_index_file_03.png "corrupted_index_file_03")
+
+##### 索引文件损坏原因
+
+Kafka 服务启动后，会校验索引文件的完整性。报错地方的源码（kafka/log/OffsetIndex.scala）如下：
 
 ```scala
 /* the last offset in the index */
@@ -77,7 +90,7 @@ Corrupt index found, index file (/data/kafka-logs/monitor-2/00000000000024386649
 
 从日志中可以看到，_lastOffset 与 baseOffset 一致，且都跟文件名相同。说明索引文件为空，导致最后一条索引偏移量不大于基础偏移量，从而报错。
 
-索引文件使用 mmap 技术提升读写性能，数据不会立即写入磁盘，需要等待操作系统定时刷盘。所以在 Kafka 进程异常退出场景下（kill -9 或宕机），数据可能并未完整写入磁盘文件，文件末尾可能会有一些不合法的数据，或者数据完全未写入磁盘，导致索引文件为空。
+索引文件使用 mmap、日志文件使用 Page Cache 技术提升读写性能，数据不会立即写入磁盘，依赖操作系统定时刷盘机制。所以在 Kafka 进程异常退出场景下（kill -9 或宕机），数据可能并未完整写入磁盘文件，文件末尾可能会有一些不合法的数据，或者数据完全未写入磁盘，导致索引文件为空。
 
 #### 索引文件重建进度怎么确定？
 
@@ -118,4 +131,25 @@ Kafka Broker 节点上数据存储结构：Topic + Partition + Replica + LogSegm
     ```
 
 通过步骤 3 与步骤 1 数据结果进行比对，即可知道索引文件重建进度。同时，通过第 2 步查到的时间与当前时间比对，即可知道花费的时间，从而推断出剩余所需时间。
+
+#### Kafka 优雅退出
+
+要触发优雅关闭，需要向进程发送终止信号（例如类 Unix 系统中的 SIGTERM）。在 Kafka 脚本 kafka-server-stop.sh 中，停止 Kafka 进程使用如下脚本：
+
+```shell
+PIDS=$(ps ax | grep -i 'kafka\.Kafka' | grep java | grep -v grep | awk '{print $1}')
+
+if [ -z "$PIDS" ]; then
+  echo "No kafka server to stop"
+  exit 1
+else 
+  kill -s TERM $PIDS
+fi
+```
+
+`kill -s TERM` 即向 Kafka 进程发送一个 SIGTERM 信号。导致未优雅退出的场景一般为：机器异常关闭、OOM Killer、或手动执行 kill -9 等。同时，如果使用 systemd 管理 Kafka 进程，也有可能无法优雅退出。因为 systemd 允许进程优雅停止的默认超时时间为 90 秒，如果超时后进程还没有停止，它会使用 SIGKILL 强制终止进程。
+
+Kafka 优雅关闭后，会在 ${log.dirs} 目录中生成 .kafka_cleanshutDown 文件，Kafka 在启动的时候，会检查是否存在该文件，从而判断是否要执行 recover log 操作。
+
+优雅关闭时 Kafka 会将所有日志同步到磁盘，以避免在重新启动时需要进行任何日志恢复（即验证日志尾部所有消息的校验和）。日志恢复需要时间，因此这会加快有意重新启动的速度。同时，会将该 Broker 作为 leader 的所有分区 leader 迁移到其他副本，这将使 leader 转移更快，并将每个分区不可用的时间最小化到几毫秒。Kafka 官网对 Graceful shutdown 说明：[Graceful shutdown](https://kafka.apache.org/documentation/#basic_ops_restarting)。
 
