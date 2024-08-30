@@ -15,6 +15,16 @@
             </div>Topic partition ISR 混乱，为 AR 超集，与实际逻辑相悖]]></description>
 </item>
 <item>
+    <title>Kafka 数据索引文件损坏</title>
+    <link>https://www.benzimu.com/posts/corrupted_index_file/</link>
+    <pubDate>Sun, 06 Aug 2023 19:36:19 &#43;0800</pubDate>
+    <author>BenZimu</author>
+    <guid>https://www.benzimu.com/posts/corrupted_index_file/</guid>
+    <description><![CDATA[<div class="featured-image">
+                <img src="/images/kafka/featured_corrupted_index_file.jpg" referrerpolicy="no-referrer">
+            </div>Kafka 数据索引文件损坏，服务中断]]></description>
+</item>
+<item>
     <title>Tcpdump &#43; Wireshark 分析 Kafka 数据包</title>
     <link>https://www.benzimu.com/posts/tcpdump_producer_ip/</link>
     <pubDate>Sat, 15 Jul 2023 19:12:11 &#43;0800</pubDate>
