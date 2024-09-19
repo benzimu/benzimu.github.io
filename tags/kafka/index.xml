@@ -4,14 +4,34 @@
         <link>https://www.benzimu.com/tags/kafka/</link>
         <description>Kafka - 标签 - BenZimu&#39;s Blog</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>benzimuu@gmail.com (BenZimu)</managingEditor>
-            <webMaster>benzimuu@gmail.com (BenZimu)</webMaster><lastBuildDate>Sat, 15 Jul 2023 19:12:11 &#43;0800</lastBuildDate><atom:link href="https://www.benzimu.com/tags/kafka/" rel="self" type="application/rss+xml" /><item>
+            <webMaster>benzimuu@gmail.com (BenZimu)</webMaster><lastBuildDate>Sun, 25 Feb 2024 20:30:10 &#43;0800</lastBuildDate><atom:link href="https://www.benzimu.com/tags/kafka/" rel="self" type="application/rss+xml" /><item>
+    <title>Topic partition ISR 混乱，为 AR 超集</title>
+    <link>https://www.benzimu.com/posts/partition_isr_confusion/</link>
+    <pubDate>Sun, 25 Feb 2024 20:30:10 &#43;0800</pubDate>
+    <author>BenZimu</author>
+    <guid>https://www.benzimu.com/posts/partition_isr_confusion/</guid>
+    <description><![CDATA[<div class="featured-image">
+                <img src="/images/kafka/featured_partition_isr_confusion.jpg" referrerpolicy="no-referrer">
+            </div>Topic partition ISR 混乱，为 AR 超集，与实际逻辑相悖]]></description>
+</item>
+<item>
+    <title>Kafka 数据索引文件损坏</title>
+    <link>https://www.benzimu.com/posts/corrupted_index_file/</link>
+    <pubDate>Sun, 06 Aug 2023 19:36:19 &#43;0800</pubDate>
+    <author>BenZimu</author>
+    <guid>https://www.benzimu.com/posts/corrupted_index_file/</guid>
+    <description><![CDATA[<div class="featured-image">
+                <img src="/images/kafka/featured_corrupted_index_file.jpg" referrerpolicy="no-referrer">
+            </div>Kafka 数据索引文件损坏]]></description>
+</item>
+<item>
     <title>Tcpdump &#43; Wireshark 分析 Kafka 数据包</title>
     <link>https://www.benzimu.com/posts/tcpdump_producer_ip/</link>
     <pubDate>Sat, 15 Jul 2023 19:12:11 &#43;0800</pubDate>
     <author>BenZimu</author>
     <guid>https://www.benzimu.com/posts/tcpdump_producer_ip/</guid>
     <description><![CDATA[<div class="featured-image">
-                <img src="/images/kafka/tcpdump_producer_ip/featured_tcpdump_producer_ip.jpg" referrerpolicy="no-referrer">
+                <img src="/images/kafka/featured_tcpdump_producer_ip.jpg" referrerpolicy="no-referrer">
             </div>使用 Tcpdump + Wireshark 抓包获取 Kafka 指定 Topic 生产者连接 IP]]></description>
 </item>
 </channel>

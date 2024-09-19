@@ -1,0 +1,18 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>ISR - 标签 - BenZimu&#39;s Blog</title>
+        <link>https://www.benzimu.com/tags/isr/</link>
+        <description>ISR - 标签 - BenZimu&#39;s Blog</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>benzimuu@gmail.com (BenZimu)</managingEditor>
+            <webMaster>benzimuu@gmail.com (BenZimu)</webMaster><lastBuildDate>Sun, 25 Feb 2024 20:30:10 &#43;0800</lastBuildDate><atom:link href="https://www.benzimu.com/tags/isr/" rel="self" type="application/rss+xml" /><item>
+    <title>Topic partition ISR 混乱，为 AR 超集</title>
+    <link>https://www.benzimu.com/posts/partition_isr_confusion/</link>
+    <pubDate>Sun, 25 Feb 2024 20:30:10 &#43;0800</pubDate>
+    <author>BenZimu</author>
+    <guid>https://www.benzimu.com/posts/partition_isr_confusion/</guid>
+    <description><![CDATA[<div class="featured-image">
+                <img src="/images/kafka/featured_partition_isr_confusion.jpg" referrerpolicy="no-referrer">
+            </div>Topic partition ISR 混乱，为 AR 超集，与实际逻辑相悖]]></description>
+</item>
+</channel>
+</rss>

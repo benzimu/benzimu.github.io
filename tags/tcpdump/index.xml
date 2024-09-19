@@ -11,7 +11,7 @@
     <author>BenZimu</author>
     <guid>https://www.benzimu.com/posts/tcpdump_producer_ip/</guid>
     <description><![CDATA[<div class="featured-image">
-                <img src="/images/kafka/tcpdump_producer_ip/featured_tcpdump_producer_ip.jpg" referrerpolicy="no-referrer">
+                <img src="/images/kafka/featured_tcpdump_producer_ip.jpg" referrerpolicy="no-referrer">
             </div>使用 Tcpdump + Wireshark 抓包获取 Kafka 指定 Topic 生产者连接 IP]]></description>
 </item>
 </channel>

@@ -39,7 +39,7 @@
 
     > Wireshark 支持 Kafka 协议说明：[https://www.wireshark.org/docs/dfref/k/kafka.html](https://www.wireshark.org/docs/dfref/k/kafka.html)
 
-    ![image](./tcpdump_producer_ip_01.png)
+    ![tcpdump_producer_ip_01](./tcpdump_producer_ip_01.png "tcpdump_producer_ip_01")
 
 2. 了解 Kafka 协议标准：[https://kafka.apache.org/0101/protocol.html](https://kafka.apache.org/0101/protocol.html)
 
@@ -47,7 +47,7 @@
 
 1. 加载数据包文件
 
-    ![image](./tcpdump_producer_ip_02.png)
+    ![tcpdump_producer_ip_02](./tcpdump_producer_ip_02.png "tcpdump_producer_ip_02")
 
 2. 填写过滤表达式，获取指定数据包
 
@@ -59,7 +59,7 @@
 
     > kafka.api_key 参考 Kafka 协议标准 [Api Keys](https://kafka.apache.org/0101/protocol.html#protocol_api_keys) 说明
 
-    ![image](./tcpdump_producer_ip_03.png)
+    ![tcpdump_producer_ip_03](./tcpdump_producer_ip_03.png "tcpdump_producer_ip_03")
 
     从中可以得知如下信息：
 
@@ -68,7 +68,7 @@
     * 请求类型
     * 客户端端口
 
-    ![image](./tcpdump_producer_ip_04.png)
+    ![tcpdump_producer_ip_04](./tcpdump_producer_ip_04.png "tcpdump_producer_ip_04")
 
     同时，可以查看 Kafka 数据包具体信息。
 
@@ -76,11 +76,11 @@
 
     打开统计页面：`统计 -> IPv4 Statistics -> All Addresses`
 
-    ![image](./tcpdump_producer_ip_05.png)
+    ![tcpdump_producer_ip_05](./tcpdump_producer_ip_05.png "tcpdump_producer_ip_05")
 
     填写过滤规则，获取客户端IP（注意去掉本机IP）：
 
-    ![image](./tcpdump_producer_ip_06.png)
+    ![tcpdump_producer_ip_06](./tcpdump_producer_ip_06.png "tcpdump_producer_ip_06")
 
     最终可确认生产者IP地址为： `10.9.78.181`
 

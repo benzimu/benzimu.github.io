@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Kafka 数据索引文件损坏 - BenZimu&#39;s Blog</title><meta name="Description" content="凡事豫则立，不豫则废！-《礼记·中庸》"><meta property="og:title" content="Kafka 数据索引文件损坏" />
+<meta property="og:description" content="Kafka 数据索引文件损坏" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.benzimu.com/posts/corrupted_index_file/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-08-06T19:36:19+08:00" />
+<meta property="article:modified_time" content="2024-08-30T14:00:04+08:00" /><meta property="og:site_name" content="BenZimu&#39;s Blog" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Kafka 数据索引文件损坏"/>
+<meta name="twitter:description" content="Kafka 数据索引文件损坏"/>
+<meta name="application-name" content="BenZimu&#39;s Blog">
+<meta name="apple-mobile-web-app-title" content="BenZimu&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://www.benzimu.com/posts/corrupted_index_file/" /><link rel="prev" href="https://www.benzimu.com/posts/tcpdump_producer_ip/" /><link rel="next" href="https://www.benzimu.com/posts/database_space_exceeded/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Kafka 数据索引文件损坏",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/www.benzimu.com\/posts\/corrupted_index_file\/"
+        },"genre": "posts","keywords": "Kafka","wordcount":  2359 ,
+        "url": "https:\/\/www.benzimu.com\/posts\/corrupted_index_file\/","datePublished": "2023-08-06T19:36:19+08:00","dateModified": "2024-08-30T14:00:04+08:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "BenZimu"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="BenZimu&#39;s Blog">BenZimu&#39;s Blog</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> 文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/benzimu" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="BenZimu&#39;s Blog">BenZimu&#39;s Blog</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/benzimu" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content always-active" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Kafka 数据索引文件损坏</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="https://www.benzimu.com/" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>BenZimu</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/kafka/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Kafka</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2023-08-06">2023-08-06</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 2359 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 5 分钟&nbsp;</div>
+        </div><div class="featured-image"><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="/images/kafka/featured_corrupted_index_file.jpg"
+        data-srcset="/images/kafka/featured_corrupted_index_file.jpg, /images/kafka/featured_corrupted_index_file.jpg 1.5x, /images/kafka/featured_corrupted_index_file.jpg 2x"
+        data-sizes="auto"
+        alt="/images/kafka/featured_corrupted_index_file.jpg"
+        title="/images/kafka/featured_corrupted_index_file.jpg" width="600" height="311" /></div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#kafka-数据索引文件损坏">Kafka 数据索引文件损坏</a>
+      <ul>
+        <li><a href="#背景说明">背景说明</a></li>
+        <li><a href="#问题排查">问题排查</a>
+          <ul>
+            <li><a href="#broker-日志">Broker 日志</a></li>
+          </ul>
+        </li>
+        <li><a href="#解决方案">解决方案</a></li>
+        <li><a href="#原理分析">原理分析</a>
+          <ul>
+            <li><a href="#索引文件为什么会损坏">索引文件为什么会损坏？</a>
+              <ul>
+                <li><a href="#索引文件格式">索引文件格式</a></li>
+                <li><a href="#索引文件损坏原因">索引文件损坏原因</a></li>
+              </ul>
+            </li>
+            <li><a href="#索引文件重建进度怎么确定">索引文件重建进度怎么确定？</a>
+              <ul>
+                <li><a href="#查看索引文件重建进度">查看索引文件重建进度</a></li>
+              </ul>
+            </li>
+            <li><a href="#kafka-优雅退出">Kafka 优雅退出</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h2 id="kafka-数据索引文件损坏">Kafka 数据索引文件损坏</h2>
+<h3 id="背景说明">背景说明</h3>
+<p>Kafka 集群版本为 0.10.2.2。监控系统告警，显示 Kafka broker 节点 CPU、内存被打满。同时，业务报障 Kafka 集群生产消费速度受影响。</p>
+<h3 id="问题排查">问题排查</h3>
+<h4 id="broker-日志">Broker 日志</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-Text" data-lang="Text"><span class="line"><span class="cl">WARN Found a corrupted index file due to requirement failed: Corrupt index found, index file (/data/kafka-logs/monitor-2/00000000000024386649.index) has non-zero size but the last offset is 24386649 which is no larger than the base offset 24386649.}. deleting /data/kafka-logs/monitor-2/00000000000024386649.timeindex, /data/kafka-logs/monitor-2/00000000000024386649.index and rebuilding index... (kafka.log.Log)
+</span></span><span class="line"><span class="cl">WARN Found invalid messages in log segment /data/kafka-logs/monitor-2/00000000000024386649.log at byte offset 886339595: Record size is smaller than minimum record overhead (14).. (kafka.log.LogSegment)
+</span></span><span class="line"><span class="cl">INFO Recovering unflushed segment 24386649 in log monitor-2. (kafka.log.Log)
+</span></span><span class="line"><span class="cl">INFO Completed load of log monitor-2 with 1 log segments and log end offset 31119681 in 18507 ms (kafka.log.Log)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>从 Broker 日志可确认，Kafka Broker 被非正常关闭停止，导致索引文件损坏。同时，查看系统日志（/var/log/messages）确认，由于内存打满，Kafka 进程被 OOM killer。</p>
+<h3 id="解决方案">解决方案</h3>
+<p>从 Kafka broker 日志可以看到，索引文件正在重建（rebuilding index&hellip;），只需等着索引文件自动重建完成，服务即可恢复正常。</p>
+<h3 id="原理分析">原理分析</h3>
+<h4 id="索引文件为什么会损坏">索引文件为什么会损坏？</h4>
+<h5 id="索引文件格式">索引文件格式</h5>
+<p><figure><a class="lightgallery" href="./corrupted_index_file_02.png" title="corrupted_index_file_02" data-thumbnail="./corrupted_index_file_02.png" data-sub-html="<h2>corrupted_index_file_02</h2><p>corrupted_index_file_02</p>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="./corrupted_index_file_02.png"
+            data-srcset="./corrupted_index_file_02.png, ./corrupted_index_file_02.png 1.5x, ./corrupted_index_file_02.png 2x"
+            data-sizes="auto"
+            alt="./corrupted_index_file_02.png" />
+    </a><figcaption class="image-caption">corrupted_index_file_02</figcaption>
+    </figure></p>
+<ul>
+<li>relativeOffset: 相对偏移量，表示消息相对于 baseOffset 的偏移量，占用 4 个字节（relativeOffset = offset - baseOffset），当前索引文件的文件名即为 baseOffset 的值。使用相对偏移量可以节省非常多的磁盘空间。如：一个 LogSegment 的 baseOffset 为 67，那么其文件名就是 00000000000000000067.log，offset=111 的消息在索引文件中的 relativeOffset 的值为 111-67=44。</li>
+<li>position: 物理地址，也就是消息在日志分段文件中对应的物理位置，占用 4 个字节。</li>
+</ul>
+<p>索引文件与数据文件对应关系物理结构如下：</p>
+<p><figure><a class="lightgallery" href="./corrupted_index_file_03.png" title="corrupted_index_file_03" data-thumbnail="./corrupted_index_file_03.png" data-sub-html="<h2>corrupted_index_file_03</h2><p>corrupted_index_file_03</p>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="./corrupted_index_file_03.png"
+            data-srcset="./corrupted_index_file_03.png, ./corrupted_index_file_03.png 1.5x, ./corrupted_index_file_03.png 2x"
+            data-sizes="auto"
+            alt="./corrupted_index_file_03.png" />
+    </a><figcaption class="image-caption">corrupted_index_file_03</figcaption>
+    </figure></p>
+<h5 id="索引文件损坏原因">索引文件损坏原因</h5>
+<p>Kafka 服务启动后，会校验索引文件的完整性。报错地方的源码（kafka/log/OffsetIndex.scala）如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-scala" data-lang="scala"><span class="line"><span class="cl"><span class="cm">/* the last offset in the index */</span>
+</span></span><span class="line"><span class="cl"><span class="k">private</span><span class="o">[</span><span class="kt">this</span><span class="o">]</span> <span class="k">var</span> <span class="nc">_lastOffset</span> <span class="k">=</span> <span class="n">lastEntry</span><span class="o">.</span><span class="n">offset</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">...</span>
+</span></span><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">  * The last entry in the index
+</span></span></span><span class="line"><span class="cl"><span class="cm">  */</span>
+</span></span><span class="line"><span class="cl"><span class="k">private</span> <span class="k">def</span> <span class="n">lastEntry</span><span class="k">:</span> <span class="kt">OffsetPosition</span> <span class="o">=</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">inLock</span><span class="o">(</span><span class="n">lock</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nc">_entries</span> <span class="k">match</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">case</span> <span class="mi">0</span> <span class="k">=&gt;</span> <span class="nc">OffsetPosition</span><span class="o">(</span><span class="n">baseOffset</span><span class="o">,</span> <span class="mi">0</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">      <span class="k">case</span> <span class="n">s</span> <span class="k">=&gt;</span> <span class="n">parseEntry</span><span class="o">(</span><span class="n">mmap</span><span class="o">,</span> <span class="n">s</span> <span class="o">-</span> <span class="mi">1</span><span class="o">).</span><span class="n">asInstanceOf</span><span class="o">[</span><span class="kt">OffsetPosition</span><span class="o">]</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">override</span> <span class="k">def</span> <span class="n">sanityCheck</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">require</span><span class="o">(</span><span class="nc">_entries</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">||</span> <span class="nc">_lastOffset</span> <span class="o">&gt;</span> <span class="n">baseOffset</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">            <span class="s">s&#34;Corrupt index found, index file (</span><span class="si">${</span><span class="n">file</span><span class="o">.</span><span class="n">getAbsolutePath</span><span class="si">}</span><span class="s">) has non-zero size but the last offset &#34;</span> <span class="o">+</span>
+</span></span><span class="line"><span class="cl">                <span class="s">s&#34;is </span><span class="si">${</span><span class="nc">_lastOffset</span><span class="si">}</span><span class="s"> which is no larger than the base offset </span><span class="si">$baseOffset</span><span class="s">.&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">val</span> <span class="n">len</span> <span class="k">=</span> <span class="n">file</span><span class="o">.</span><span class="n">length</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">require</span><span class="o">(</span><span class="n">len</span> <span class="o">%</span> <span class="n">entrySize</span> <span class="o">==</span> <span class="mi">0</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">            <span class="s">&#34;Index file &#34;</span> <span class="o">+</span> <span class="n">file</span><span class="o">.</span><span class="n">getAbsolutePath</span> <span class="o">+</span> <span class="s">&#34; is corrupt, found &#34;</span> <span class="o">+</span> <span class="n">len</span> <span class="o">+</span>
+</span></span><span class="line"><span class="cl">            <span class="s">&#34; bytes which is not positive or not a multiple of 8.&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>_entries：表示索引文件条目数</li>
+<li>_lastOffset：如果 _entries 为 0，即索引文件为空时，与 baseOffset；否则为最后一条索引绝对偏移量</li>
+<li>baseOffset：为索引文件基础偏移量，与文件名称一致</li>
+<li>entrySize：OffsetIndex（偏移量索引文件） 为 8 字节；TimeIndex（时间戳索引文件） 为 12 字节</li>
+</ul>
+<p>从源码可知，有两个条件会导致索引文件损坏错误：</p>
+<ol>
+<li>索引文件条目数不为 0，且最后一条索引偏移量小于或等于基础偏移量</li>
+<li>索引文件数据量不为 8 的整数倍</li>
+</ol>
+<p>最开始找到的 Broker 报错日志中有如下信息：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">Corrupt index found, index file (/data/kafka-logs/monitor-2/00000000000024386649.index) has non-zero size but the last offset is 24386649 which is no larger than the base offset 24386649.}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>从日志中可以看到，_lastOffset 与 baseOffset 一致，且都跟文件名相同。说明索引文件为空，导致最后一条索引偏移量不大于基础偏移量，从而报错。</p>
+<p>索引文件使用 mmap、日志文件使用 Page Cache 技术提升读写性能，数据不会立即写入磁盘，依赖操作系统定时刷盘机制。所以在 Kafka 进程异常退出场景下（kill -9 或宕机），数据可能并未完整写入磁盘文件，文件末尾可能会有一些不合法的数据，或者数据完全未写入磁盘，导致索引文件为空。</p>
+<h4 id="索引文件重建进度怎么确定">索引文件重建进度怎么确定？</h4>
+<p><figure><a class="lightgallery" href="./corrupted_index_file_01.png" title="corrupted_index_file_01" data-thumbnail="./corrupted_index_file_01.png" data-sub-html="<h2>corrupted_index_file_01</h2><p>corrupted_index_file_01</p>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="./corrupted_index_file_01.png"
+            data-srcset="./corrupted_index_file_01.png, ./corrupted_index_file_01.png 1.5x, ./corrupted_index_file_01.png 2x"
+            data-sizes="auto"
+            alt="./corrupted_index_file_01.png" />
+    </a><figcaption class="image-caption">corrupted_index_file_01</figcaption>
+    </figure></p>
+<p>Kafka Broker 节点上数据存储结构：Topic + Partition + Replica + LogSegment + Index。</p>
+<p>每个 Partition 数据被划分成了多个 LogSegment，默认大小为 1GB，可通过参数 log.segment.bytes 修改。将整个 Partition 数据拆分为多个 LogSegment 的目的是为了防止单个 Log 日志过大，同时便于消息的查找、维护和清理，以及方便过期的 LogSegment 快速被删除。</p>
+<p>每个 LogSegment 都会包含两个索引文件，分别是 .index 和 .timeindex，即位移索引文件和时间戳索引文件。当数据写入分区时，它会被写入一个 active LogSegment，一个 Partition 中同一时刻只会有一个 active LogSegment。如果该 active LogSegment 数据量达到最大的大小限制，则会滚动打开一个新 LogSegment，该 LogSegment 将成为新的 active LogSegment。每次滚动生成一个新 LogSegment 时，都会同时打开索引文件，两者成对出现。</p>
+<p>基于上述说明，在 Kafka 进程异常退出场景下（kill -9 或宕机），通常一个 Partition 只会有最后一个 LogSegment 未被刷盘，或者在数据量比较大时会有多个。所以，我们可以通过 Kafka 服务日志大致推测出索引文件重建进度。</p>
+<h5 id="查看索引文件重建进度">查看索引文件重建进度</h5>
+<ol>
+<li>
+<p>查看 Broker 上 Partition 个数</p>
+<blockquote>
+<p>/data/kafka-logs 目录下可能还包括几个 Kafka 状态文件，如 cleaner-offset-checkpoint 等，可手动减掉具体数量</p>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">ll /data/kafka-logs <span class="p">|</span> wc -l
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>查找到第一条索引重建日志</p>
+<blockquote>
+<p>一般会在 &ldquo;INFO Loading logs&rdquo; 日志之后，开始重建索引。最近时间的一条日志即为开始时间日志。</p>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">grep <span class="s2">&#34;INFO Loading logs&#34;</span> /data/kafka/logs/server.log
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>查看已完成重建索引文件数量</p>
+<blockquote>
+<p>选择上一步骤最近时间的一条日志。</p>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">grep -A1000000 <span class="s2">&#34;\[2023-08-02 19:12:09,880\] INFO Loading logs&#34;</span> /data/kafka/logs/server.log <span class="p">|</span> grep <span class="s2">&#34;.index and rebuilding index&#34;</span> <span class="p">|</span> wc -l
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ol>
+<p>通过步骤 3 与步骤 1 数据结果进行比对，即可知道索引文件重建进度。同时，通过第 2 步查到的时间与当前时间比对，即可知道花费的时间，从而推断出剩余所需时间。</p>
+<h4 id="kafka-优雅退出">Kafka 优雅退出</h4>
+<p>要触发优雅关闭，需要向进程发送终止信号（例如类 Unix 系统中的 SIGTERM）。在 Kafka 脚本 kafka-server-stop.sh 中，停止 Kafka 进程使用如下脚本：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="nv">PIDS</span><span class="o">=</span><span class="k">$(</span>ps ax <span class="p">|</span> grep -i <span class="s1">&#39;kafka\.Kafka&#39;</span> <span class="p">|</span> grep java <span class="p">|</span> grep -v grep <span class="p">|</span> awk <span class="s1">&#39;{print $1}&#39;</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[</span> -z <span class="s2">&#34;</span><span class="nv">$PIDS</span><span class="s2">&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">echo</span> <span class="s2">&#34;No kafka server to stop&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">exit</span> <span class="m">1</span>
+</span></span><span class="line"><span class="cl"><span class="k">else</span> 
+</span></span><span class="line"><span class="cl">  <span class="nb">kill</span> -s TERM <span class="nv">$PIDS</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>kill -s TERM</code> 即向 Kafka 进程发送一个 SIGTERM 信号。导致未优雅退出的场景一般为：机器异常关闭、OOM Killer、或手动执行 kill -9 等。同时，如果使用 systemd 管理 Kafka 进程，也有可能无法优雅退出。因为 systemd 允许进程优雅停止的默认超时时间为 90 秒，如果超时后进程还没有停止，它会使用 SIGKILL 强制终止进程。</p>
+<p>Kafka 优雅关闭后，会在 ${log.dirs} 目录中生成 .kafka_cleanshutDown 文件，Kafka 在启动的时候，会检查是否存在该文件，从而判断是否要执行 recover log 操作。</p>
+<p>优雅关闭时 Kafka 会将所有日志同步到磁盘，以避免在重新启动时需要进行任何日志恢复（即验证日志尾部所有消息的校验和）。日志恢复需要时间，因此这会加快有意重新启动的速度。同时，会将该 Broker 作为 leader 的所有分区 leader 迁移到其他副本，这将使 leader 转移更快，并将每个分区不可用的时间最小化到几毫秒。Kafka 官网对 Graceful shutdown 说明：<a href="https://kafka.apache.org/documentation/#basic_ops_restarting" target="_blank" rel="noopener noreffer ">Graceful shutdown</a>。</p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2024-08-30</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/posts/corrupted_index_file/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://www.benzimu.com/posts/corrupted_index_file/" data-title="Kafka 数据索引文件损坏" data-hashtags="Kafka"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://www.benzimu.com/posts/corrupted_index_file/" data-hashtag="Kafka"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://www.benzimu.com/posts/corrupted_index_file/" data-title="Kafka 数据索引文件损坏"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://www.benzimu.com/posts/corrupted_index_file/" data-title="Kafka 数据索引文件损坏"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@7.3.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://www.benzimu.com/posts/corrupted_index_file/" data-title="Kafka 数据索引文件损坏" data-image="/images/kafka/featured_corrupted_index_file.jpg"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/kafka/">Kafka</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/tcpdump_producer_ip/" class="prev" rel="prev" title="Tcpdump &#43; Wireshark 分析 Kafka 数据包"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>Tcpdump + Wireshark 分析 Kafka 数据包</a>
+            <a href="/posts/database_space_exceeded/" class="next" rel="next" title="etcd mvcc: database space exceeded">etcd mvcc: database space exceeded<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.104.3">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2024</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="https://www.benzimu.com/" target="_blank">BenZimu</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/css/lightgallery-bundle.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/lightgallery.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":150},"comment":{},"lightgallery":true,"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":30,"type":"lunr"}};</script><script type="text/javascript" src="/js/theme.min.js"></script><script type="text/javascript">
+            window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());
+            gtag('config', 'G-ZMK8SVQ014', { 'anonymize_ip': true });
+        </script><script type="text/javascript" src="https://www.googletagmanager.com/gtag/js?id=G-ZMK8SVQ014" async></script></body>
+</html>

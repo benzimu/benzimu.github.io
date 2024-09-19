@@ -205,13 +205,13 @@ Address: 185.199.108.153
 
 登录到域名服务方（如阿里）控制台，配置一条 `CNAME 类型`记录指向 `benzimu.github.io`，以及多条 `A 类型`记录指向具体 IP 地址。
 
-![域名解析规则](./dns-rulers.png)
+![域名解析规则](./dns-rulers.png "域名解析规则")
 
 #### GitHub 配置个人域名
 
 登录 GitHub，访问`benzimu.github.io` 仓库，修改配置`Settings -> Pages -> Custom domain` 填写自己的域名，并开启 HTTPS 访问。
 
-![Github Pages 设置](./github_pages_settings.png)
+![Github Pages 设置](./github_pages_settings.png "Github Pages 设置")
 
 域名解析有一定时延，过段时间后，即可通过个人域名访问网站了。
 

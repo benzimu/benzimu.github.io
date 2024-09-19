@@ -1,0 +1,28 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>etcd - 分类 - BenZimu&#39;s Blog</title>
+        <link>https://www.benzimu.com/categories/etcd/</link>
+        <description>etcd - 分类 - BenZimu&#39;s Blog</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>benzimuu@gmail.com (BenZimu)</managingEditor>
+            <webMaster>benzimuu@gmail.com (BenZimu)</webMaster><lastBuildDate>Sat, 03 Aug 2024 20:04:10 &#43;0800</lastBuildDate><atom:link href="https://www.benzimu.com/categories/etcd/" rel="self" type="application/rss+xml" /><item>
+    <title>etcd leader 频繁切换</title>
+    <link>https://www.benzimu.com/posts/leader_frequently_change/</link>
+    <pubDate>Sat, 03 Aug 2024 20:04:10 &#43;0800</pubDate>
+    <author>BenZimu</author>
+    <guid>https://www.benzimu.com/posts/leader_frequently_change/</guid>
+    <description><![CDATA[<div class="featured-image">
+                <img src="/images/etcd/featured_leader_frequently_change.jpg" referrerpolicy="no-referrer">
+            </div>etcd leader 频繁切换，导致客户端服务异常]]></description>
+</item>
+<item>
+    <title>etcd mvcc: database space exceeded</title>
+    <link>https://www.benzimu.com/posts/database_space_exceeded/</link>
+    <pubDate>Sun, 03 Sep 2023 19:11:14 &#43;0800</pubDate>
+    <author>BenZimu</author>
+    <guid>https://www.benzimu.com/posts/database_space_exceeded/</guid>
+    <description><![CDATA[<div class="featured-image">
+                <img src="/images/etcd/featured_leader_frequently_change.jpg" referrerpolicy="no-referrer">
+            </div>etcd 数据库存储空间超出限制，导致无法写入数据]]></description>
+</item>
+</channel>
+</rss>

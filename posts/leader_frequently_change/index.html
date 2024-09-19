@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>etcd leader 频繁切换 - BenZimu&#39;s Blog</title><meta name="Description" content="凡事豫则立，不豫则废！-《礼记·中庸》"><meta property="og:title" content="etcd leader 频繁切换" />
+<meta property="og:description" content="etcd leader 频繁切换，导致客户端服务异常" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.benzimu.com/posts/leader_frequently_change/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-08-03T20:04:10+08:00" />
+<meta property="article:modified_time" content="2024-09-12T21:28:49+08:00" /><meta property="og:site_name" content="BenZimu&#39;s Blog" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="etcd leader 频繁切换"/>
+<meta name="twitter:description" content="etcd leader 频繁切换，导致客户端服务异常"/>
+<meta name="application-name" content="BenZimu&#39;s Blog">
+<meta name="apple-mobile-web-app-title" content="BenZimu&#39;s Blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://www.benzimu.com/posts/leader_frequently_change/" /><link rel="prev" href="https://www.benzimu.com/posts/partition_isr_confusion/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "etcd leader 频繁切换",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/www.benzimu.com\/posts\/leader_frequently_change\/"
+        },"genre": "posts","keywords": "etcd, leader","wordcount":  2357 ,
+        "url": "https:\/\/www.benzimu.com\/posts\/leader_frequently_change\/","datePublished": "2024-08-03T20:04:10+08:00","dateModified": "2024-09-12T21:28:49+08:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "BenZimu"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="BenZimu&#39;s Blog">BenZimu&#39;s Blog</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> 文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/benzimu" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="BenZimu&#39;s Blog">BenZimu&#39;s Blog</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/benzimu" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content always-active" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">etcd leader 频繁切换</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="https://www.benzimu.com/" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>BenZimu</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/etcd/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>etcd</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2024-08-03">2024-08-03</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 2357 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 5 分钟&nbsp;</div>
+        </div><div class="featured-image"><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="/images/etcd/featured_leader_frequently_change.jpg"
+        data-srcset="/images/etcd/featured_leader_frequently_change.jpg, /images/etcd/featured_leader_frequently_change.jpg 1.5x, /images/etcd/featured_leader_frequently_change.jpg 2x"
+        data-sizes="auto"
+        alt="/images/etcd/featured_leader_frequently_change.jpg"
+        title="/images/etcd/featured_leader_frequently_change.jpg" width="600" height="401" /></div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#etcd-leader-频繁切换">etcd leader 频繁切换</a>
+      <ul>
+        <li><a href="#背景说明">背景说明</a></li>
+        <li><a href="#问题排查">问题排查</a>
+          <ul>
+            <li><a href="#管控服务etcd-客户端日志">管控服务（etcd 客户端）日志</a></li>
+            <li><a href="#etcd-日志">etcd 日志</a></li>
+            <li><a href="#查看虚拟机监控">查看虚拟机监控</a></li>
+          </ul>
+        </li>
+        <li><a href="#问题确认">问题确认</a></li>
+        <li><a href="#解决方案">解决方案</a></li>
+        <li><a href="#原理分析">原理分析</a>
+          <ul>
+            <li><a href="#etcd-fdatasync">etcd fdatasync</a></li>
+            <li><a href="#ectd-实践推荐">ectd 实践推荐</a></li>
+            <li><a href="#etcd-性能影响因素">etcd 性能影响因素</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h2 id="etcd-leader-频繁切换">etcd leader 频繁切换</h2>
+<h3 id="背景说明">背景说明</h3>
+<p>管控服务依赖 etcd 进行选主，项目测试开发阶段均正常。项目交互后在客户环境部署，etcd 偶发性出现 leader 切换，但频率很低，几天出现一次。项目用量上升后开发频繁出现 leader 切换。</p>
+<p>etcd 集群节点分别部署在三台虚拟机中，磁盘使用 Ceph 共享存储。每台虚拟机 IOPS 已设置为最大 1000。</p>
+<h3 id="问题排查">问题排查</h3>
+<h4 id="管控服务etcd-客户端日志">管控服务（etcd 客户端）日志</h4>
+<ul>
+<li>异常日志1</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-Text" data-lang="Text"><span class="line"><span class="cl">rpc error: code = Unavailable desc = etcdserver: leader changed
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>异常日志2</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-Text" data-lang="Text"><span class="line"><span class="cl">rpc error: code = Unknown desc = context deadline exceeded
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>从客户端服务日志可知，由于 etcd leader 切换，导致服务异常。</p>
+<h4 id="etcd-日志">etcd 日志</h4>
+<ul>
+<li>异常日志1</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-Text" data-lang="Text"><span class="line"><span class="cl">waiting for ReadIndex response took too long
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>异常日志2</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-Text" data-lang="Text"><span class="line"><span class="cl">{&#34;level&#34;:&#34;warn&#34;,&#34;msg&#34;:&#34;slow fdatasync&#34;,&#34;took&#34;:&#34;2.14025047s&#34;,&#34;expected-duration&#34;:&#34;1s&#34;}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>异常日志3</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-Text" data-lang="Text"><span class="line"><span class="cl">raft.node: 255a2e4092d561fb changed leader from 255a2e4092d561fb to 1de1eaa8fb268f49 at term 3112
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>从 etcd 日志可以确认，由于 slow fdatasync，导致 etcd leader 切换。</p>
+<h4 id="查看虚拟机监控">查看虚拟机监控</h4>
+<p>etcd leader 异常切换期间，虚拟机 CPU、内存使用率均在正常范围内。并且 IOPS、吞吐量、await延时等监控也均在有效范围内，所以暂时无法确定是否与 Ceph 共享存储性能问题。</p>
+<p>但磁盘监控中存在一个异常指标，disk.io.msec_write（所有写入操作所花费的总时间）：</p>
+<p><figure><a class="lightgallery" href="./leader_frequently_change_03.png" title="leader_frequently_change_03" data-thumbnail="./leader_frequently_change_03.png" data-sub-html="<h2>leader_frequently_change_03</h2><p>leader_frequently_change_03</p>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="./leader_frequently_change_03.png"
+            data-srcset="./leader_frequently_change_03.png, ./leader_frequently_change_03.png 1.5x, ./leader_frequently_change_03.png 2x"
+            data-sizes="auto"
+            alt="./leader_frequently_change_03.png" />
+    </a><figcaption class="image-caption">leader_frequently_change_03</figcaption>
+    </figure></p>
+<p>从监控看该指标最高达到60s，且每次峰值均能与 etcd <code>slow fdatasync</code> 日志时间吻合，可确认 etcd 频繁 leader changed 与磁盘性能有关。</p>
+<h3 id="问题确认">问题确认</h3>
+<p>etcd leader 每 100ms 向 follower 发送心跳，维持 leader 地位。由于磁盘性能不足，导致 etcd fdatasync 较慢，超过 etcd follower 选举超时时间（election timeout，默认 1000ms，约10个心跳间隔），从而 etcd 其他 follower 节点开始新一轮 leader 选举，这就是 etcd 服务日志中看到的频繁 Leader changed 的原因。</p>
+<p>从 disk.io.msec_write 监控图可以看出，峰值之间间隔约 2 小时，即每两小时出现一次 msec_write 升高，且 etcd 服务日志中出现一次 leader changed。查看服务部署拓扑图，发现三台 etcd 节点上分别都部署了 Prometheus 服务。</p>
+<p>了解 Prometheus 存储原理的应该知道，Prometheus 新写入的数据保存在内存 block 中，2 小时后将 block 数据写入磁盘。同时，为了防止程序崩溃导致数据丢失，实现了 WAL（write-ahead-log）机制，服务启动时会以写入日志（WAL）的方式来实现重播，从而恢复数据。</p>
+<p>为验证猜想，将虚拟机上 Prometheus 服务停掉后，etcd 服务运行正常，没有再出现 leader changed。</p>
+<p>项目上线早期，业务量小，Prometheus 监控数据也比较小，所以偶发性出现 etcd leader changed。业务量上涨后，Prometheus 监控数据上涨，导致每 2 小时数据写入磁盘时，占用大量磁盘IO性能，影响 etcd 性能。</p>
+<h3 id="解决方案">解决方案</h3>
+<p>知道了问题，解决方案就比较明了了，直接将 etcd 单独部署，不与其他业务耦合，减少相互之间的影响。</p>
+<h3 id="原理分析">原理分析</h3>
+<h4 id="etcd-fdatasync">etcd fdatasync</h4>
+<p>fdatasync 与 fsync 都是系统调用，用于将块缓冲区数据写入磁盘。fsync 会等待写磁盘操作结束，然后同步返回，操作完成前会阻塞。可用于数据库这样的应用程序，这种应用程序需要确保将修改过的块立即写到磁盘上。fsync 会将文件的所有元数据（如文件的大小、权限、访问时间等）和文件内容一起同步到磁盘。而 fdatasync 仅同步文件内容及其与文件大小相关的元数据，而不处理不必要的元数据（如访问时间等）。因此，fdatasync 的开销通常比 fsync 更小，性能更好。</p>
+<p>每当客户端添加或更新键值对数据时，etcd 会向 WAL 文件添加一条入库记录条目。再进一步处理之前，etcd 必须 100% 确保 WAL 条目已经被持久化。 要在 Linux 实现这一点，仅使用write系统调用是不够的，因为对物理存储的写入操作可能会发生延迟。比如，Linux 可能会将写入的 WAL 条目在内核内存缓存中保留一段时间（例如，页缓存）。如果要确保数据被写入持久化存储，你必须在 write 系统调用之后调用 fdatasync 系统调用。</p>
+<h4 id="ectd-实践推荐">ectd 实践推荐</h4>
+<p>由于 etcd 将数据写入磁盘并将提案保留在磁盘上，因此其性能取决于磁盘性能。尽管 etcd 不是特别 I/O 密集型的，但它需要低延迟块设备才能获得最佳性能和稳定性。由于 etcd 的共识协议依赖于将元数据持久存储到日志 (WAL)，因此 etcd 对<strong>磁盘写入延迟很敏感</strong>。<strong>慢速磁盘和其他进程的磁盘活动</strong>可能会导致较长的 fsync 延迟。</p>
+<p>这些延迟可能会导致 etcd 错过心跳，无法及时将新提案提交到磁盘，并最终导致请求超时和暂时失去领导者。同样导致 etcd 心跳时间超过选举超时时间，从而破坏集群的领导者选举。基于这些原因，<strong>应避免将对 I/O 敏感或密集且共享相同底层 I/O 基础架构的控制平面节点上的其他工作负载共置在一起</strong>。</p>
+<p>就延迟而言，在块设备上运行 etcd，该设备可以连续写入至少 50 IOPS，长度为 8000 字节。也就是说，延迟为 10 毫秒，请记住使用 fdatasync 同步 WAL 中的每个写入。对于负载较重的集群，建议连续 500 IOPS，长度为 8000 字节（2 毫秒）。要测量这些数字，可以使用基准测试工具，例如 fio。</p>
+<p>为了实现这样的性能，应在具有<strong>低延迟和高吞吐量的 SSD 或 NVMe 磁盘</strong>支持的机器上运行 etcd。同样可以将 etcd 从共享磁盘移动到单独的磁盘，以防止或解决性能问题。</p>
+<h4 id="etcd-性能影响因素">etcd 性能影响因素</h4>
+<p>etcd 提供稳定、持续的高性能。两个因素决定了性能：<strong>延迟和吞吐量</strong>。延迟是完成操作所需的时间。吞吐量是某个时间段内完成的总操作数。通常，当 etcd 接受并发客户端请求时，平均延迟会随着总体吞吐量的增加而增加。</p>
+<p>etcd 使用 Raft 共识算法在成员之间复制请求并达成一致。共识性能（尤其是提交延迟）受到两个物理约束的限制：<strong>网络 IO 延迟和磁盘 IO 延迟</strong>。完成 etcd 请求的最短时间是成员之间的网络往返时间 (RTT) 加上 fdatasync 将数据提交到永久存储所需的时间。数据中心内的 RTT 可能长达几百微秒。美国境内的典型 RTT 约为 50 毫秒，而各大洲之间的 RTT 可能最慢为 400 毫秒。旋转磁盘的典型 fdatasync 延迟约为 10 毫秒。对于 SSD，延迟通常低于 1 毫秒。为了提高吞吐量，etcd 将多个请求批量处理并将它们提交给 Raft。这种批处理策略使 etcd 即使在负载很重的情况下也能实现高吞吐量。</p>
+<p>还有其他子系统会影响 etcd 的整体性能。每个序列化的 etcd 请求都必须通过 etcd 的 boltdb 支持的 MVCC 存储引擎，这通常需要几十微秒才能完成。etcd 会定期增量快照其最近应用的请求，并将它们与之前的磁盘快照合并。此过程可能会导致延迟峰值。虽然这在 SSD 上通常不是问题，但它可能会使 HDD 上观察到的延迟加倍。同样，压缩也会影响 etcd 的性能。</p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2024-09-12</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/posts/leader_frequently_change/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://www.benzimu.com/posts/leader_frequently_change/" data-title="etcd leader 频繁切换" data-hashtags="etcd,leader"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://www.benzimu.com/posts/leader_frequently_change/" data-hashtag="etcd"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://www.benzimu.com/posts/leader_frequently_change/" data-title="etcd leader 频繁切换"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://www.benzimu.com/posts/leader_frequently_change/" data-title="etcd leader 频繁切换"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@7.3.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://www.benzimu.com/posts/leader_frequently_change/" data-title="etcd leader 频繁切换" data-image="/images/etcd/featured_leader_frequently_change.jpg"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/etcd/">etcd</a>,&nbsp;<a href="/tags/leader/">leader</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/partition_isr_confusion/" class="prev" rel="prev" title="Topic partition ISR 混乱，为 AR 超集"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>Topic partition ISR 混乱，为 AR 超集</a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.104.3">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2024</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="https://www.benzimu.com/" target="_blank">BenZimu</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/css/lightgallery-bundle.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/lightgallery.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":150},"comment":{},"lightgallery":true,"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":30,"type":"lunr"}};</script><script type="text/javascript" src="/js/theme.min.js"></script><script type="text/javascript">
+            window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());
+            gtag('config', 'G-ZMK8SVQ014', { 'anonymize_ip': true });
+        </script><script type="text/javascript" src="https://www.googletagmanager.com/gtag/js?id=G-ZMK8SVQ014" async></script></body>
+</html>

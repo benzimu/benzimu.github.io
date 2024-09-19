@@ -15,7 +15,7 @@ http 是应用层协议，web 开发中最常见的协议。当我们在浏览�
 
 ## TCP 三次握手、四次挥手
 
-![TCP 连接示意图](./tcp.jpg)
+![TCP 连接示意图](./tcp.jpg "TCP 连接示意图")
 
 ### 三次握手
 
@@ -53,11 +53,11 @@ http 是应用层协议，web 开发中最常见的协议。当我们在浏览�
 
 ### 客户端状态转换过程
 
-![客户端状态](./client-status.png)
+![客户端状态](./client-status.png "客户端状态")
 
 ### 服务端状态转换过程
 
-![服务端状态](./server-status.png)
+![服务端状态](./server-status.png "服务端状态")
 
 ## Socket 编程示例代码
 
