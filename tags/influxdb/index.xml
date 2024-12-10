@@ -1,0 +1,18 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>InfluxDB - 标签 - BenZimu&#39;s Blog</title>
+        <link>https://www.benzimu.com/tags/influxdb/</link>
+        <description>InfluxDB - 标签 - BenZimu&#39;s Blog</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>benzimuu@gmail.com (BenZimu)</managingEditor>
+            <webMaster>benzimuu@gmail.com (BenZimu)</webMaster><lastBuildDate>Sat, 13 Jul 2024 18:22:12 &#43;0800</lastBuildDate><atom:link href="https://www.benzimu.com/tags/influxdb/" rel="self" type="application/rss+xml" /><item>
+    <title>基于 K8s 实现 Prometheus 高可用架构方案</title>
+    <link>https://www.benzimu.com/posts/high_availability/</link>
+    <pubDate>Sat, 13 Jul 2024 18:22:12 &#43;0800</pubDate>
+    <author>BenZimu</author>
+    <guid>https://www.benzimu.com/posts/high_availability/</guid>
+    <description><![CDATA[<div class="featured-image">
+                <img src="/images/prometheus/featured_high_availability.jpg" referrerpolicy="no-referrer">
+            </div>基于 K8s 实现 Prometheus+Alertmanager+InfluxDB+Grafana 监控采集告警高可用架构方案]]></description>
+</item>
+</channel>
+</rss>

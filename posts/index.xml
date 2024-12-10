@@ -15,6 +15,16 @@
             </div>etcd leader 频繁切换，导致客户端服务异常]]></description>
 </item>
 <item>
+    <title>基于 K8s 实现 Prometheus 高可用架构方案</title>
+    <link>https://www.benzimu.com/posts/high_availability/</link>
+    <pubDate>Sat, 13 Jul 2024 18:22:12 &#43;0800</pubDate>
+    <author>BenZimu</author>
+    <guid>https://www.benzimu.com/posts/high_availability/</guid>
+    <description><![CDATA[<div class="featured-image">
+                <img src="/images/prometheus/featured_high_availability.jpg" referrerpolicy="no-referrer">
+            </div>基于 K8s 实现 Prometheus+Alertmanager+InfluxDB+Grafana 监控采集告警高可用架构方案]]></description>
+</item>
+<item>
     <title>Topic partition ISR 混乱，为 AR 超集</title>
     <link>https://www.benzimu.com/posts/partition_isr_confusion/</link>
     <pubDate>Sun, 25 Feb 2024 20:30:10 &#43;0800</pubDate>
@@ -93,16 +103,6 @@
     <description><![CDATA[<div class="featured-image">
                 <img src="/images/tornado_src_analysis/featured_concurrent.jpg" referrerpolicy="no-referrer">
             </div>tornado concurrent 实现解析。]]></description>
-</item>
-<item>
-    <title>tornado gen 实现解析</title>
-    <link>https://www.benzimu.com/posts/tornado_gen/</link>
-    <pubDate>Fri, 10 Nov 2017 09:00:00 &#43;0800</pubDate>
-    <author>BenZimu</author>
-    <guid>https://www.benzimu.com/posts/tornado_gen/</guid>
-    <description><![CDATA[<div class="featured-image">
-                <img src="/images/tornado_src_analysis/featured_gen.jpg" referrerpolicy="no-referrer">
-            </div>tornado gen 实现解析。]]></description>
 </item>
 </channel>
 </rss>

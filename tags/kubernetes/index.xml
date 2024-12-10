@@ -4,7 +4,17 @@
         <link>https://www.benzimu.com/tags/kubernetes/</link>
         <description>Kubernetes - 标签 - BenZimu&#39;s Blog</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>benzimuu@gmail.com (BenZimu)</managingEditor>
-            <webMaster>benzimuu@gmail.com (BenZimu)</webMaster><lastBuildDate>Sun, 02 Jul 2023 20:10:15 &#43;0800</lastBuildDate><atom:link href="https://www.benzimu.com/tags/kubernetes/" rel="self" type="application/rss+xml" /><item>
+            <webMaster>benzimuu@gmail.com (BenZimu)</webMaster><lastBuildDate>Sat, 13 Jul 2024 18:22:12 &#43;0800</lastBuildDate><atom:link href="https://www.benzimu.com/tags/kubernetes/" rel="self" type="application/rss+xml" /><item>
+    <title>基于 K8s 实现 Prometheus 高可用架构方案</title>
+    <link>https://www.benzimu.com/posts/high_availability/</link>
+    <pubDate>Sat, 13 Jul 2024 18:22:12 &#43;0800</pubDate>
+    <author>BenZimu</author>
+    <guid>https://www.benzimu.com/posts/high_availability/</guid>
+    <description><![CDATA[<div class="featured-image">
+                <img src="/images/prometheus/featured_high_availability.jpg" referrerpolicy="no-referrer">
+            </div>基于 K8s 实现 Prometheus+Alertmanager+InfluxDB+Grafana 监控采集告警高可用架构方案]]></description>
+</item>
+<item>
     <title>使用 kubeadm 安装 k8s 集群</title>
     <link>https://www.benzimu.com/posts/k8s_deploy/</link>
     <pubDate>Sun, 02 Jul 2023 20:10:15 &#43;0800</pubDate>
