@@ -28,7 +28,7 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/www.benzimu.com\/posts\/high_availability\/"
-        },"genre": "posts","keywords": "Prometheus, InfluxDB, Alertmanager, Grafana, Kubernetes","wordcount":  3650 ,
+        },"genre": "posts","keywords": "Prometheus, InfluxDB, Alertmanager, Grafana, Kubernetes","wordcount":  3743 ,
         "url": "https:\/\/www.benzimu.com\/posts\/high_availability\/","datePublished": "2024-07-13T18:22:12+08:00","dateModified": "2024-12-10T11:51:59+08:00","publisher": {
             "@type": "Organization",
             "name": ""},"author": {
@@ -102,7 +102,7 @@
             <div class="toc-content always-active" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">基于 K8s 实现 Prometheus 高可用架构方案</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="https://www.benzimu.com/" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>BenZimu</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/prometheus/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Prometheus</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2024-07-13">2024-07-13</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 3650 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2024-07-13">2024-07-13</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 3743 字&nbsp;
                 <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 8 分钟&nbsp;</div>
         </div><div class="featured-image"><img
         class="lazyload"
@@ -128,6 +128,7 @@
               <ul>
                 <li><a href="#influxdb-v2-vs-v1">InfluxDB v2 vs v1</a></li>
                 <li><a href="#influxdb-k8s-yaml-部署文件">InfluxDB K8s yaml 部署文件</a></li>
+                <li><a href="#创建数据库">创建数据库</a></li>
               </ul>
             </li>
             <li><a href="#prometheus">Prometheus</a>
@@ -414,7 +415,46 @@
 </span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">ClusterIP</span><span class="w">
 </span></span></span></code></pre></td></tr></table>
 </div>
-</div><h4 id="prometheus">Prometheus</h4>
+</div><h5 id="创建数据库">创建数据库</h5>
+<ul>
+<li>
+<p>InfluxDB 部署成功后，进入 pod 内</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">kubectl <span class="nb">exec</span> -it influxdb-5697fd8897-hh5sx bash
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>登录 InfluxDB 客户端，执行命令</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="c1"># 进入客户端</span>
+</span></span><span class="line"><span class="cl">influx
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 创建数据库</span>
+</span></span><span class="line"><span class="cl">CREATE DATABASE <span class="s2">&#34;prometheus&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 修改默认策略，数据保留天数改为30天，可按实际情况修改</span>
+</span></span><span class="line"><span class="cl">ALTER RETENTION POLICY autogen ON prometheus DURATION 30d<span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<h4 id="prometheus">Prometheus</h4>
 <h5 id="prometheus-高可用方案实现">Prometheus 高可用方案实现</h5>
 <ol>
 <li>Prometheus 官方社区并无高可用架构方案，Prometheus 均为单点部署。</li>

@@ -146,6 +146,27 @@ spec:
   type: ClusterIP
 ```
 
+##### 创建数据库
+
+- InfluxDB 部署成功后，进入 pod 内
+
+  ```shell
+  kubectl exec -it influxdb-5697fd8897-hh5sx bash
+  ```
+
+- 登录 InfluxDB 客户端，执行命令
+
+  ```shell
+  # 进入客户端
+  influx
+
+  # 创建数据库
+  CREATE DATABASE "prometheus"
+
+  # 修改默认策略，数据保留天数改为30天，可按实际情况修改
+  ALTER RETENTION POLICY autogen ON prometheus DURATION 30d;
+  ```
+
 #### Prometheus
 
 ##### Prometheus 高可用方案实现
